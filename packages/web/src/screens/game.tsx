@@ -18,12 +18,28 @@ type Props = {
   onClearError: () => void;
 };
 
+const MissionBriefing = ({ game }: { game: GameState }): React.ReactNode => (
+  <div className='mission-briefing'>
+    {game.worldDescription && (
+      <div className='mission-world'>
+        <h4>World</h4>
+        <p>{game.worldDescription}</p>
+      </div>
+    )}
+    <Checkpoints
+      playerCheckpoints={game.playerCheckpoints}
+      aiCheckpoints={game.aiCheckpoints}
+      aiVisibility={game.config.aiVisibility}
+    />
+  </div>
+);
+
 const Game = ({ game, loading, error, streamText, onSubmitTurn, onEndGame, onClearError }: Props): React.ReactNode => {
   const navigate = useNavigate();
   const [panelOpen, setPanelOpen] = useState(false);
   const lastPlayerTurn = [...game.turns].reverse().find((t) => t.author === "player");
   const isWaiting = game.phase === "generating" || game.phase === "scoring" || game.phase === "ai_turn";
-  const fulfilled = game.playerCheckpoints.filter((c) => c.fulfilled).length;
+  const hasTurns = game.turns.length > 0;
 
   return (
     <div className='screen game-screen'>
@@ -38,7 +54,7 @@ const Game = ({ game, loading, error, streamText, onSubmitTurn, onEndGame, onCle
         </div>
         <div className='game-header-right'>
           <button className={`status-toggle${panelOpen ? " active" : ""}`} onClick={() => setPanelOpen(!panelOpen)}>
-            {panelOpen ? "\u25BE" : "\u25B8"} {fulfilled}/{game.playerCheckpoints.length}
+            {panelOpen ? "\u25BE" : "\u25B8"} Status
           </button>
           <button className='btn btn-ghost btn-small' onClick={onEndGame}>
             End
@@ -63,21 +79,31 @@ const Game = ({ game, loading, error, streamText, onSubmitTurn, onEndGame, onCle
             aiCheckpoints={game.aiCheckpoints}
             aiVisibility={game.config.aiVisibility}
           />
+          {hasTurns && game.worldDescription && (
+            <details className='panel-world'>
+              <summary>World</summary>
+              <p>{game.worldDescription}</p>
+            </details>
+          )}
         </div>
 
         <div className='game-main'>
-          {game.worldDescription && (
-            <div className='world-description'>
-              <strong>World:</strong> {game.worldDescription}
-            </div>
-          )}
-
-          <StoryDisplay turns={game.turns} streamText={streamText} />
-
-          {isWaiting && !streamText && <AiThinking phase={game.phase} />}
-
-          {(game.phase === "player_turn" || game.phase === "closing") && !loading && (
-            <TurnInput charLimit={game.config.charLimit} onSubmit={onSubmitTurn} />
+          {!hasTurns ? (
+            <>
+              <MissionBriefing game={game} />
+              {isWaiting && !streamText && <AiThinking phase={game.phase} />}
+              {(game.phase === "player_turn" || game.phase === "closing") && !loading && (
+                <TurnInput charLimit={game.config.charLimit} onSubmit={onSubmitTurn} />
+              )}
+            </>
+          ) : (
+            <>
+              <StoryDisplay turns={game.turns} streamText={streamText} />
+              {isWaiting && !streamText && <AiThinking phase={game.phase} />}
+              {(game.phase === "player_turn" || game.phase === "closing") && !loading && (
+                <TurnInput charLimit={game.config.charLimit} onSubmit={onSubmitTurn} />
+              )}
+            </>
           )}
         </div>
       </div>
