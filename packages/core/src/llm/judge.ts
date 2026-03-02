@@ -21,8 +21,9 @@ const clamp = (val: unknown): number => {
 };
 
 const judgePlayerTurn = async (config: LLMConfig, state: GameState): Promise<JudgeResult> => {
-  const storyText = state.turns.map((t) => t.text).join("\n\n");
   const latestTurn = state.turns[state.turns.length - 1];
+  const previousTurns = state.turns.slice(0, -1);
+  const storyContext = previousTurns.map((t) => t.text).join("\n\n");
 
   const playerCheckpointList = state.playerCheckpoints
     .map((c, i) => `${i + 1}. [${c.fulfilled ? "FULFILLED" : "PENDING"}] ${c.description}`)
@@ -63,7 +64,7 @@ Where newlyFulfilledPlayer and newlyFulfilledAi are arrays of checkpoint numbers
     },
     {
       role: "user",
-      content: `FULL STORY:\n${storyText}\n\nLATEST PLAYER TURN:\n${latestTurn.text}`,
+      content: `STORY SO FAR:\n${storyContext}\n\nLATEST TURN (written by the PLAYER — this is what you are judging):\n${latestTurn.text}`,
     },
   ];
 
