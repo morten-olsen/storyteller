@@ -6,7 +6,7 @@ type Props = {
   game: GameState;
 };
 
-const GameOver = ({ game }: Props): React.ReactNode => {
+const ObjectiveGameOver = ({ game }: Props): React.ReactNode => {
   const navigate = useNavigate();
   const totalScore = aggregateScore(game.turns);
   const playerFulfilled = playerCheckpointsFulfilled(game.playerCheckpoints);
@@ -78,6 +78,58 @@ const GameOver = ({ game }: Props): React.ReactNode => {
       </div>
     </div>
   );
+};
+
+const SurvivalGameOver = ({ game }: Props): React.ReactNode => {
+  const navigate = useNavigate();
+  const totalScore = aggregateScore(game.turns);
+  const roundsSurvived = Math.floor(game.turns.filter((t) => t.author === "player").length - 1);
+
+  return (
+    <div className='screen gameover gameover-survival'>
+      {game.title && <p className='gameover-title'>{game.title}</p>}
+      <h2 className='death'>You Died</h2>
+      {game.deathReason && <p className='gameover-subtitle death-reason'>{game.deathReason}</p>}
+
+      <div className='gameover-stats'>
+        <div className='stat'>
+          <span className='stat-label'>Score</span>
+          <span className={`stat-value ${totalScore >= 0 ? "positive" : "negative"}`}>
+            {totalScore >= 0 ? "+" : ""}
+            {totalScore.toFixed(1)}
+          </span>
+        </div>
+        <div className='stat'>
+          <span className='stat-label'>Rounds</span>
+          <span className='stat-value'>{Math.max(0, roundsSurvived)}</span>
+        </div>
+        <div className='stat'>
+          <span className='stat-label'>Turns</span>
+          <span className='stat-value'>{game.turns.length}</span>
+        </div>
+        <div className='stat'>
+          <span className='stat-label'>Cost</span>
+          <span className='stat-value'>${(game.totalCost ?? 0).toFixed(4)}</span>
+        </div>
+      </div>
+
+      <div className='gameover-actions'>
+        <button className='btn btn-primary' onClick={() => navigate("/setup")}>
+          Try Again
+        </button>
+        <button className='btn btn-secondary' onClick={() => navigate("/")}>
+          Home
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const GameOver = ({ game }: Props): React.ReactNode => {
+  if (game.mode === "survival") {
+    return <SurvivalGameOver game={game} />;
+  }
+  return <ObjectiveGameOver game={game} />;
 };
 
 export { GameOver };

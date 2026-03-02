@@ -38,7 +38,13 @@ const History = ({ onResume }: Props): React.ReactNode => {
               <div key={g.id} className={`history-card${inProgress ? " in-progress" : ""}`}>
                 <div className='history-card-header'>
                   <span className={`result ${inProgress ? "active" : g.playerWon ? "won" : "lost"}`}>
-                    {inProgress ? "In Progress" : g.playerWon ? "Won" : "Lost"}
+                    {inProgress
+                      ? "In Progress"
+                      : g.mode === "survival"
+                        ? "Died"
+                        : g.playerWon
+                          ? "Won"
+                          : "Lost"}
                   </span>
                   <span className='history-date'>{new Date(g.date).toLocaleDateString()}</span>
                 </div>

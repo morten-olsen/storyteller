@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { NavigateFunction } from "react-router-dom";
-import type { GameState, Difficulty, AiPersona, LLMConfig, StreamCompletionResult } from "@storyteller/core";
+import type { GameState, GameMode, Difficulty, AiPersona, LLMConfig, StreamCompletionResult } from "@storyteller/core";
 import {
   getDifficultyConfig,
   createGame,
@@ -56,17 +56,17 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
   const clearError = useCallback(() => setError(null), []);
 
   const startGame = useCallback(
-    async (difficulty: Difficulty, persona: AiPersona, worldPrompt: string) => {
+    async (mode: GameMode, difficulty: Difficulty, persona: AiPersona, worldPrompt: string) => {
       setError(null);
       const id = crypto.randomUUID();
       const config = getDifficultyConfig(difficulty);
-      const state = createGame(id, difficulty, config, persona, worldPrompt);
+      const state = createGame(id, mode, difficulty, config, persona, worldPrompt);
       setGame(state);
       navigate("/game");
       setLoading(true);
 
       try {
-        const result = await generateSetup(llmConfig, config, worldPrompt);
+        const result = await generateSetup(llmConfig, mode, config, worldPrompt);
         setGame((prev) =>
           prev
             ? applySetupResult(
@@ -101,12 +101,17 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
 
       try {
         const judgeResult = await judgePlayerTurn(llmConfig, state);
+
+        // For survival mode death: use deathReason from judge as the score reason
+        const scoreReason =
+          state.mode === "survival" && judgeResult.deathReason ? judgeResult.deathReason : judgeResult.reason;
+
         state = applyScore(
           state,
           judgeResult.score,
           judgeResult.playerCheckpoints,
           judgeResult.aiCheckpoints,
-          judgeResult.reason,
+          scoreReason,
           judgeResult.cost,
         );
         setGame(state);

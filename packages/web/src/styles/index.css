@@ -351,6 +351,7 @@ h4 {
   font-size: 0.75rem;
 }
 
+.mode-picker,
 .difficulty-picker,
 .persona-picker {
   display: flex;
@@ -1269,4 +1270,47 @@ h4 {
 
 .field input::placeholder {
   color: var(--text-dim);
+}
+
+/* ═══ SURVIVAL MODE ═══ */
+
+.survival-status {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.625rem;
+}
+
+.survival-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.turn-score-death {
+  font-weight: 700;
+  color: var(--negative);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Survival Game Over */
+.gameover h2.death {
+  color: var(--negative);
+  text-shadow: 0 0 20px rgba(192, 80, 80, 0.3);
+}
+
+.death-reason {
+  font-family: var(--font-story);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--negative);
+  opacity: 0.85;
+  margin-bottom: 2rem;
+}
+
+.gameover-survival .gameover-stats {
+  border-color: rgba(192, 80, 80, 0.2);
 }

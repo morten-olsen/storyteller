@@ -3,7 +3,7 @@ import type { LLMConfig, GameState } from "../types.js";
 import { chatCompletion, chatCompletionStream } from "./client.js";
 import type { ChatMessage, StreamCallbacks, ChatCompletionResult, StreamCompletionResult } from "./client.js";
 
-const buildNarratorMessages = (state: GameState): ChatMessage[] => {
+const buildObjectiveMessages = (state: GameState): ChatMessage[] => {
   const storyContext = state.turns.map((t) => t.text).join("\n\n");
   const checkpointList = state.aiCheckpoints
     .filter((c) => !c.fulfilled)
@@ -39,6 +39,45 @@ RULES:
   }
 
   return messages;
+};
+
+const buildSurvivalMessages = (state: GameState): ChatMessage[] => {
+  const storyContext = state.turns.map((t) => t.text).join("\n\n");
+  const roundNumber = Math.floor(state.turns.length / 2);
+
+  const system = `${state.persona.systemPrompt}
+
+You are the narrator of a survival storytelling game. The player writes their way out of dangerous situations, and you resolve the outcome and introduce the NEXT escalating challenge.
+
+WORLD:
+${state.worldDescription}
+
+CURRENT ROUND: ${roundNumber + 1}
+ESCALATION LEVEL: ${roundNumber} (increase danger and complexity with each round — early rounds are tense but manageable, later rounds should be increasingly dire and creative)
+
+RULES:
+- First, briefly resolve the player's survival attempt (they survived — acknowledge their solution)
+- Then introduce the NEXT dangerous situation they must face
+- Write exactly ONE paragraph, no more than ${state.config.charLimit} characters
+- Each new danger should escalate in severity and creativity
+- Do NOT reference game mechanics, scoring, or survival checks directly
+- Write compelling, vivid prose that raises the stakes`;
+
+  const messages: ChatMessage[] = [{ role: "system", content: system }];
+
+  messages.push({
+    role: "user",
+    content: `Story so far:\n\n${storyContext}\n\nResolve the player's action and introduce the next danger.`,
+  });
+
+  return messages;
+};
+
+const buildNarratorMessages = (state: GameState): ChatMessage[] => {
+  if (state.mode === "survival") {
+    return buildSurvivalMessages(state);
+  }
+  return buildObjectiveMessages(state);
 };
 
 const generateAiTurn = async (config: LLMConfig, state: GameState): Promise<ChatCompletionResult> => {

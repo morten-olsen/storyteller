@@ -1,9 +1,20 @@
-import type { TurnScore, Turn } from "./types.js";
+import type { ObjectiveTurnScore, SurvivalTurnScore, TurnScore, Turn } from "./types.js";
 
-const computeTotalScore = (score: Omit<TurnScore, "total">): TurnScore => {
+const computeObjectiveScore = (score: Omit<ObjectiveTurnScore, "total" | "kind">): ObjectiveTurnScore => {
   return {
+    kind: "objective",
     ...score,
     total: score.coherence + score.proseQuality + score.adaptation,
+  };
+};
+
+const computeSurvivalScore = (
+  score: Omit<SurvivalTurnScore, "total" | "kind">,
+): SurvivalTurnScore => {
+  return {
+    kind: "survival",
+    ...score,
+    total: score.creativity + score.writingQuality + score.effectiveness,
   };
 };
 
@@ -23,4 +34,4 @@ const playerCheckpointsFulfilled = (checkpoints: { fulfilled: boolean }[]): numb
   return checkpoints.filter((c) => c.fulfilled).length;
 };
 
-export { computeTotalScore, aggregateScore, playerCheckpointsFulfilled };
+export { computeObjectiveScore, computeSurvivalScore, aggregateScore, playerCheckpointsFulfilled };

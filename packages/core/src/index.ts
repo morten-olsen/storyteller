@@ -1,9 +1,12 @@
 // Types
 export type {
+  GameMode,
   Difficulty,
   DifficultyConfig,
   AiPersona,
   Checkpoint,
+  ObjectiveTurnScore,
+  SurvivalTurnScore,
   TurnScore,
   Turn,
   GamePhase,
@@ -21,7 +24,7 @@ export { DIFFICULTY_CONFIGS, getDifficultyConfig } from "./difficulty.js";
 export { PERSONAS, getPersona, getRandomPersona } from "./personas.js";
 
 // Scoring
-export { computeTotalScore, aggregateScore, playerCheckpointsFulfilled } from "./scoring.js";
+export { computeObjectiveScore, computeSurvivalScore, aggregateScore, playerCheckpointsFulfilled } from "./scoring.js";
 
 // Game state machine
 export {

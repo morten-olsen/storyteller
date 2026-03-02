@@ -1,3 +1,7 @@
+// --- Game Mode ---
+
+export type GameMode = "objective" | "survival";
+
 // --- Difficulty ---
 
 export type Difficulty = "easy" | "medium" | "hard";
@@ -28,12 +32,24 @@ export type Checkpoint = {
 
 // --- Scoring ---
 
-export type TurnScore = {
+export type ObjectiveTurnScore = {
+  kind: "objective";
   coherence: number; // -1 to +1
   proseQuality: number; // -1 to +1
   adaptation: number; // -1 to +1
   total: number; // sum of above
 };
+
+export type SurvivalTurnScore = {
+  kind: "survival";
+  creativity: number; // -1 to +1
+  writingQuality: number; // -1 to +1
+  effectiveness: number; // -1 to +1
+  survived: boolean;
+  total: number; // sum of above
+};
+
+export type TurnScore = ObjectiveTurnScore | SurvivalTurnScore;
 
 // --- Turns ---
 
@@ -51,6 +67,7 @@ export type Turn = {
 export type GamePhase = "setup" | "generating" | "player_turn" | "ai_turn" | "scoring" | "closing" | "game_over";
 
 export type GameState = {
+  mode: GameMode;
   id: string;
   phase: GamePhase;
   difficulty: Difficulty;
@@ -64,12 +81,14 @@ export type GameState = {
   turns: Turn[];
   isClosingTurn: boolean;
   totalCost: number;
+  deathReason?: string;
 };
 
 // --- Storage ---
 
 export type GameSummary = {
   id: string;
+  mode: GameMode;
   date: string;
   phase: GamePhase;
   title: string;

@@ -5,42 +5,56 @@ type Props = {
   reason?: string;
 };
 
-const DIMENSIONS: { key: keyof Omit<TurnScore, "total">; label: string }[] = [
-  { key: "coherence", label: "Coherence" },
-  { key: "proseQuality", label: "Prose Quality" },
-  { key: "adaptation", label: "Adaptation" },
-];
+type Dimension = {
+  key: string;
+  label: string;
+  value: number;
+};
+
+const getDimensions = (score: TurnScore): Dimension[] => {
+  if (score.kind === "survival") {
+    return [
+      { key: "creativity", label: "Creativity", value: score.creativity },
+      { key: "writingQuality", label: "Writing", value: score.writingQuality },
+      { key: "effectiveness", label: "Effective", value: score.effectiveness },
+    ];
+  }
+  return [
+    { key: "coherence", label: "Coherence", value: score.coherence },
+    { key: "proseQuality", label: "Prose Quality", value: score.proseQuality },
+    { key: "adaptation", label: "Adaptation", value: score.adaptation },
+  ];
+};
 
 const ScoreBar = ({ score, reason }: Props): React.ReactNode => {
+  const dimensions = getDimensions(score);
+
   return (
     <div className='score-bar'>
       <h4>Last Turn Score</h4>
-      {DIMENSIONS.map(({ key, label }) => {
-        const val = score[key];
-        return (
-          <div key={key} className='score-row'>
-            <span className='score-label'>{label}</span>
-            <div className='score-track'>
-              <div
-                className={`score-fill ${val >= 0 ? "positive" : "negative"}`}
-                style={{
-                  width: `${Math.abs(val) * 50}%`,
-                  marginLeft: val < 0 ? undefined : "50%",
-                  marginRight: val >= 0 ? undefined : "50%",
-                  [val < 0 ? "right" : "left"]: "50%",
-                  position: "absolute",
-                  [val < 0 ? "right" : "left"]: 0,
-                }}
-              />
-              <div className='score-center' />
-            </div>
-            <span className={`score-value ${val >= 0 ? "positive" : "negative"}`}>
-              {val >= 0 ? "+" : ""}
-              {val.toFixed(1)}
-            </span>
+      {dimensions.map(({ key, label, value }) => (
+        <div key={key} className='score-row'>
+          <span className='score-label'>{label}</span>
+          <div className='score-track'>
+            <div
+              className={`score-fill ${value >= 0 ? "positive" : "negative"}`}
+              style={{
+                width: `${Math.abs(value) * 50}%`,
+                marginLeft: value < 0 ? undefined : "50%",
+                marginRight: value >= 0 ? undefined : "50%",
+                [value < 0 ? "right" : "left"]: "50%",
+                position: "absolute",
+                [value < 0 ? "right" : "left"]: 0,
+              }}
+            />
+            <div className='score-center' />
           </div>
-        );
-      })}
+          <span className={`score-value ${value >= 0 ? "positive" : "negative"}`}>
+            {value >= 0 ? "+" : ""}
+            {value.toFixed(1)}
+          </span>
+        </div>
+      ))}
       <div className='score-total'>
         <span>Total</span>
         <span className={score.total >= 0 ? "positive" : "negative"}>

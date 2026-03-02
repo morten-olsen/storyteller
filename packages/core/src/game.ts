@@ -1,6 +1,7 @@
 import type {
   GameState,
   GamePhase,
+  GameMode,
   Difficulty,
   DifficultyConfig,
   AiPersona,
@@ -13,12 +14,14 @@ import { aggregateScore, playerCheckpointsFulfilled } from "./scoring.js";
 
 const createGame = (
   id: string,
+  mode: GameMode,
   difficulty: Difficulty,
   config: DifficultyConfig,
   persona: AiPersona,
   worldPrompt: string,
 ): GameState => {
   return {
+    mode,
     id,
     phase: "generating",
     difficulty,
@@ -90,6 +93,15 @@ const applyScore = (
   turns[turns.length - 1] = last;
 
   const totalCost = state.totalCost + cost;
+
+  if (state.mode === "survival") {
+    if (score.kind === "survival" && !score.survived) {
+      return { ...state, phase: "game_over", turns, totalCost, deathReason: reason };
+    }
+    return { ...state, phase: "ai_turn", turns, totalCost };
+  }
+
+  // Objective mode
   const allFulfilled = playerCheckpoints.every((c) => c.fulfilled) && aiCheckpoints.every((c) => c.fulfilled);
 
   if (state.isClosingTurn) {
@@ -141,6 +153,7 @@ const buildSummary = (state: GameState): GameSummary => {
   const aiFulfilled = playerCheckpointsFulfilled(state.aiCheckpoints);
   return {
     id: state.id,
+    mode: state.mode,
     date: new Date().toISOString(),
     phase: state.phase,
     title: state.title,
@@ -150,7 +163,7 @@ const buildSummary = (state: GameState): GameSummary => {
     totalScore: aggregateScore(state.turns),
     totalCost: state.totalCost,
     turnCount: state.turns.length,
-    playerWon: playerFulfilled >= aiFulfilled,
+    playerWon: state.mode === "survival" ? false : playerFulfilled >= aiFulfilled,
   };
 };
 
