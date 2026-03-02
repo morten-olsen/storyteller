@@ -17,13 +17,13 @@ const StoryDisplay = ({ turns, streamText }: Props): React.ReactNode => {
     <div className='story-display'>
       {turns.map((turn) => (
         <div key={turn.index} className={`story-turn turn-${turn.author}`}>
-          <span className='turn-marker'>{turn.author === "player" ? "You" : "AI"}</span>
+          <div className='turn-header'>{turn.author === "player" ? "You" : "Narrator"}</div>
           <p>{turn.text}</p>
         </div>
       ))}
       {streamText && (
         <div className='story-turn turn-ai streaming'>
-          <span className='turn-marker'>AI</span>
+          <div className='turn-header'>Narrator</div>
           <p>
             {streamText}
             <span className='cursor' />

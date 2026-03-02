@@ -12,11 +12,15 @@ const Welcome = ({ isConfigured, activeGameId, activeGameTitle, onResume }: Prop
 
   return (
     <div className='screen welcome'>
-      <h1 className='title'>Storyteller</h1>
-      <p className='subtitle'>An adversarial narrative game</p>
-      <p className='description'>
+      <h1 className='welcome-title'>
+        Storyteller
+        <span className='welcome-cursor' />
+      </h1>
+      <div className='welcome-rule' />
+      <p className='welcome-subtitle'>An adversarial narrative game</p>
+      <p className='welcome-desc'>
         You and an AI each have secret story objectives. Take turns writing a shared narrative, steering it toward your
-        goals while crafting compelling prose. The better you write, the higher you score.
+        goals while crafting compelling prose.
       </p>
 
       <div className='welcome-actions'>
@@ -34,7 +38,7 @@ const Welcome = ({ isConfigured, activeGameId, activeGameTitle, onResume }: Prop
           </button>
         ) : (
           <button className='btn btn-primary' onClick={() => navigate("/settings")}>
-            Configure API Key to Start
+            Configure API
           </button>
         )}
         <button className='btn btn-secondary' onClick={() => navigate("/history")}>

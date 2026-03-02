@@ -15,15 +15,15 @@ const GameOver = ({ game }: Props): React.ReactNode => {
 
   return (
     <div className='screen gameover'>
-      {game.title && <h3 className='gameover-title'>{game.title}</h3>}
-      <h2>{playerWon ? "Victory" : "Defeat"}</h2>
+      {game.title && <p className='gameover-title'>{game.title}</p>}
+      <h2 className={playerWon ? "victory" : "defeat"}>{playerWon ? "Victory" : "Defeat"}</h2>
       <p className='gameover-subtitle'>
         {playerWon ? "Your narrative prevailed." : "The AI steered the story to its ends."}
       </p>
 
       <div className='gameover-stats'>
         <div className='stat'>
-          <span className='stat-label'>Total Score</span>
+          <span className='stat-label'>Score</span>
           <span className={`stat-value ${totalScore >= 0 ? "positive" : "negative"}`}>
             {totalScore >= 0 ? "+" : ""}
             {totalScore.toFixed(1)}
@@ -34,13 +34,13 @@ const GameOver = ({ game }: Props): React.ReactNode => {
           <span className='stat-value'>{game.turns.length}</span>
         </div>
         <div className='stat'>
-          <span className='stat-label'>Your Checkpoints</span>
+          <span className='stat-label'>You</span>
           <span className='stat-value'>
             {playerFulfilled}/{game.playerCheckpoints.length}
           </span>
         </div>
         <div className='stat'>
-          <span className='stat-label'>AI Checkpoints</span>
+          <span className='stat-label'>AI</span>
           <span className='stat-value'>
             {aiFulfilled}/{game.aiCheckpoints.length}
           </span>

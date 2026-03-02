@@ -11,7 +11,7 @@ const TurnInput = ({ charLimit, onSubmit }: Props): React.ReactNode => {
   const isOverLimit = remaining < 0;
   const isEmpty = text.trim().length === 0;
 
-  const handleSubmit = () => {
+  const handleSubmit = (): void => {
     if (isEmpty || isOverLimit) {
       return;
     }
@@ -19,7 +19,7 @@ const TurnInput = ({ charLimit, onSubmit }: Props): React.ReactNode => {
     setText("");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       handleSubmit();
     }
@@ -27,19 +27,22 @@ const TurnInput = ({ charLimit, onSubmit }: Props): React.ReactNode => {
 
   return (
     <div className='turn-input'>
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder='Write your next paragraph...'
-        rows={4}
-      />
+      <div className='turn-input-area'>
+        <span className='turn-prompt'>&gt;</span>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder='Write your next paragraph...'
+          rows={3}
+        />
+      </div>
       <div className='turn-input-footer'>
         <span className={`char-count ${isOverLimit ? "over" : remaining < 50 ? "warn" : ""}`}>
-          {remaining} characters remaining
+          {remaining} remaining
         </span>
-        <button className='btn btn-primary' disabled={isEmpty || isOverLimit} onClick={handleSubmit}>
-          Submit (Cmd+Enter)
+        <button className='btn btn-primary btn-small' disabled={isEmpty || isOverLimit} onClick={handleSubmit}>
+          Submit
         </button>
       </div>
     </div>

@@ -5,17 +5,21 @@ type Props = {
 };
 
 const MESSAGES: Partial<Record<GamePhase, string>> = {
-  generating: "Crafting the world...",
-  scoring: "Judging your prose...",
-  ai_turn: "The narrator is writing...",
+  generating: "Crafting the world",
+  scoring: "Judging your prose",
+  ai_turn: "The narrator is writing",
 };
 
 const AiThinking = ({ phase }: Props): React.ReactNode => {
-  const message = MESSAGES[phase] ?? "Thinking...";
+  const message = MESSAGES[phase] ?? "Thinking";
   return (
     <div className='ai-thinking'>
-      <div className='spinner' />
-      <span>{message}</span>
+      <div className='thinking-dots'>
+        <span />
+        <span />
+        <span />
+      </div>
+      <span>{message}...</span>
     </div>
   );
 };
