@@ -1,4 +1,4 @@
-import type { ObjectiveTurnScore, SurvivalTurnScore, TurnScore, Turn } from "./types.js";
+import type { ObjectiveTurnScore, SurvivalTurnScore, Turn } from "./types.js";
 
 const computeObjectiveScore = (score: Omit<ObjectiveTurnScore, "total" | "kind">): ObjectiveTurnScore => {
   return {
@@ -8,9 +8,7 @@ const computeObjectiveScore = (score: Omit<ObjectiveTurnScore, "total" | "kind">
   };
 };
 
-const computeSurvivalScore = (
-  score: Omit<SurvivalTurnScore, "total" | "kind">,
-): SurvivalTurnScore => {
+const computeSurvivalScore = (score: Omit<SurvivalTurnScore, "total" | "kind">): SurvivalTurnScore => {
   return {
     kind: "survival",
     ...score,

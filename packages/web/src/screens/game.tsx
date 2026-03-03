@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import type { GameState } from "@storyteller/core";
 import { aggregateScore } from "@storyteller/core";
@@ -8,15 +8,20 @@ import { TurnInput } from "../components/turn-input.tsx";
 import { ScoreBar } from "../components/score-bar.tsx";
 import { Checkpoints } from "../components/checkpoints.tsx";
 import { AiThinking } from "../components/ai-thinking.tsx";
+import { TutorialOverlay } from "../components/tutorial-overlay.tsx";
 
 type Props = {
   game: GameState;
   loading: boolean;
   error: string | null;
   streamText: string;
+  tutorialEnabled: boolean;
+  draftText: string | null;
+  draftLoading: boolean;
   onSubmitTurn: (text: string) => void;
   onEndGame: () => void;
   onClearError: () => void;
+  onGenerateDraft: () => void;
 };
 
 const SurvivalStatus = ({ game }: { game: GameState }): React.ReactNode => {
@@ -54,13 +59,40 @@ const MissionBriefing = ({ game }: { game: GameState }): React.ReactNode => (
   </div>
 );
 
-const Game = ({ game, loading, error, streamText, onSubmitTurn, onEndGame, onClearError }: Props): React.ReactNode => {
+const Game = ({
+  game,
+  loading,
+  error,
+  streamText,
+  tutorialEnabled,
+  draftText,
+  draftLoading,
+  onSubmitTurn,
+  onEndGame,
+  onClearError,
+  onGenerateDraft,
+}: Props): React.ReactNode => {
   const navigate = useNavigate();
   const [panelOpen, setPanelOpen] = useState(false);
+  const [tutorialActive, setTutorialActive] = useState(tutorialEnabled);
+  const draftTriggeredRef = useRef(false);
   const lastPlayerTurn = [...game.turns].reverse().find((t) => t.author === "player");
   const isWaiting = game.phase === "generating" || game.phase === "scoring" || game.phase === "ai_turn";
   const hasTurns = game.turns.length > 0;
   const isSurvival = game.mode === "survival";
+
+  const handleTutorialComplete = (): void => {
+    setTutorialActive(false);
+    onGenerateDraft();
+  };
+
+  // When tutorial is off, trigger draft immediately at first player_turn
+  useEffect(() => {
+    if (!tutorialActive && game.phase === "player_turn" && !hasTurns && !draftTriggeredRef.current) {
+      draftTriggeredRef.current = true;
+      onGenerateDraft();
+    }
+  }, [tutorialActive, game.phase, hasTurns, onGenerateDraft]);
 
   return (
     <div className='screen game-screen'>
@@ -119,7 +151,12 @@ const Game = ({ game, loading, error, streamText, onSubmitTurn, onEndGame, onCle
               <MissionBriefing game={game} />
               {isWaiting && !streamText && <AiThinking phase={game.phase} />}
               {(game.phase === "player_turn" || game.phase === "closing") && !loading && (
-                <TurnInput charLimit={game.config.charLimit} onSubmit={onSubmitTurn} />
+                <TurnInput
+                  charLimit={game.config.charLimit}
+                  onSubmit={onSubmitTurn}
+                  draftText={draftText}
+                  draftLoading={draftLoading}
+                />
               )}
             </>
           ) : (
@@ -130,6 +167,9 @@ const Game = ({ game, loading, error, streamText, onSubmitTurn, onEndGame, onCle
                 <TurnInput charLimit={game.config.charLimit} onSubmit={onSubmitTurn} />
               )}
             </>
+          )}
+          {tutorialActive && game.phase === "player_turn" && !hasTurns && (
+            <TutorialOverlay mode={game.mode} onComplete={handleTutorialComplete} />
           )}
         </div>
       </div>

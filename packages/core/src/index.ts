@@ -51,3 +51,5 @@ export type { SetupResult } from "./llm/setup.js";
 export { generateAiTurn, streamAiTurn } from "./llm/narrator.js";
 export { judgePlayerTurn } from "./llm/judge.js";
 export type { JudgeResult } from "./llm/judge.js";
+export { generateDraftTurn } from "./llm/draft.js";
+export type { DraftTurnResult } from "./llm/draft.js";

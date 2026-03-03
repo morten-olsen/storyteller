@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Props = {
   charLimit: number;
   onSubmit: (text: string) => void;
+  draftText?: string | null;
+  draftLoading?: boolean;
 };
 
-const TurnInput = ({ charLimit, onSubmit }: Props): React.ReactNode => {
+const TurnInput = ({ charLimit, onSubmit, draftText, draftLoading }: Props): React.ReactNode => {
   const [text, setText] = useState("");
+  const prevDraftRef = useRef<string | null | undefined>(null);
   const remaining = charLimit - text.length;
   const isOverLimit = remaining < 0;
   const isEmpty = text.trim().length === 0;
+
+  // When draftText arrives, fill it into the textarea
+  useEffect(() => {
+    if (draftText && draftText !== prevDraftRef.current) {
+      setText(draftText);
+    }
+    prevDraftRef.current = draftText;
+  }, [draftText]);
 
   const handleSubmit = (): void => {
     if (isEmpty || isOverLimit) {
@@ -33,7 +44,7 @@ const TurnInput = ({ charLimit, onSubmit }: Props): React.ReactNode => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder='Write your next paragraph...'
+          placeholder={draftLoading ? "Generating suggestion..." : "Write your next paragraph..."}
           rows={3}
         />
       </div>

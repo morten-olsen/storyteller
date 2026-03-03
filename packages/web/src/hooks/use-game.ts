@@ -12,6 +12,7 @@ import {
   generateSetup,
   judgePlayerTurn,
   streamAiTurn,
+  generateDraftTurn,
 } from "@storyteller/core";
 
 import { idbStorage } from "../storage.ts";
@@ -25,6 +26,9 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
   const [streamText, setStreamText] = useState("");
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
   const [activeGameTitle, setActiveGameTitle] = useState<string | null>(null);
+  const [tutorialEnabled, setTutorialEnabled] = useState(false);
+  const [draftText, setDraftText] = useState<string | null>(null);
+  const [draftLoading, setDraftLoading] = useState(false);
   const abortRef = useRef(false);
 
   // Check for in-progress game on mount
@@ -56,8 +60,11 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
   const clearError = useCallback(() => setError(null), []);
 
   const startGame = useCallback(
-    async (mode: GameMode, difficulty: Difficulty, persona: AiPersona, worldPrompt: string) => {
+    async (mode: GameMode, difficulty: Difficulty, persona: AiPersona, worldPrompt: string, tutorial: boolean) => {
       setError(null);
+      setTutorialEnabled(tutorial);
+      setDraftText(null);
+      setDraftLoading(false);
       const id = crypto.randomUUID();
       const config = getDifficultyConfig(difficulty);
       const state = createGame(id, mode, difficulty, config, persona, worldPrompt);
@@ -162,6 +169,22 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
     navigate("/game-over");
   }, [game, navigate]);
 
+  const generateDraft = useCallback(async () => {
+    if (!game || draftLoading) {
+      return;
+    }
+    setDraftLoading(true);
+    try {
+      const result = await generateDraftTurn(llmConfig, game);
+      setDraftText(result.text);
+      setGame((prev) => (prev ? { ...prev, totalCost: prev.totalCost + result.cost } : prev));
+    } catch {
+      // Draft is non-critical — silently fail
+    } finally {
+      setDraftLoading(false);
+    }
+  }, [game, draftLoading, llmConfig]);
+
   const resumeGame = useCallback(
     async (id: string) => {
       const saved = await idbStorage.loadGame(id);
@@ -182,10 +205,14 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
     streamText,
     activeGameId,
     activeGameTitle,
+    tutorialEnabled,
+    draftText,
+    draftLoading,
     startGame,
     submitTurn,
     endGame,
     resumeGame,
+    generateDraft,
   };
 };
 

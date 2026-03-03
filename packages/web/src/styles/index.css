@@ -1314,3 +1314,87 @@ h4 {
 .gameover-survival .gameover-stats {
   border-color: rgba(192, 80, 80, 0.2);
 }
+
+/* ═══ TUTORIAL OVERLAY ═══ */
+
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+}
+
+.tutorial-spotlight {
+  position: fixed;
+  border: 2px solid var(--amber);
+  border-radius: 4px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+  z-index: 10001;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.tutorial-tooltip {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--amber-dim);
+  border-left: 3px solid var(--amber);
+  border-radius: 2px;
+  padding: 1rem 1.25rem;
+  max-width: 340px;
+  width: calc(100% - 2rem);
+  z-index: 10002;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.tutorial-tooltip.tutorial-tooltip-anchored {
+  top: auto;
+  transform: translateX(-50%);
+}
+
+.tutorial-tooltip p {
+  font-family: var(--font-story);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-bright);
+  margin-bottom: 0.75rem;
+}
+
+.tutorial-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tutorial-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.tutorial-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-bright);
+  transition: background 0.2s;
+}
+
+.tutorial-dot.active {
+  background: var(--amber);
+}
+
+.tutorial-nav-buttons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* ═══ TUTORIAL PICKER ═══ */
+
+.tutorial-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}

@@ -20,10 +20,14 @@ const AppRoutes = (): React.ReactNode => {
     streamText,
     activeGameId,
     activeGameTitle,
+    tutorialEnabled,
+    draftText,
+    draftLoading,
     startGame,
     submitTurn,
     endGame,
     resumeGame,
+    generateDraft,
   } = useGame(config, navigate);
 
   if (!loaded) {
@@ -53,9 +57,13 @@ const AppRoutes = (): React.ReactNode => {
               loading={loading}
               error={error}
               streamText={streamText}
+              tutorialEnabled={tutorialEnabled}
+              draftText={draftText}
+              draftLoading={draftLoading}
               onSubmitTurn={submitTurn}
               onEndGame={endGame}
               onClearError={clearError}
+              onGenerateDraft={generateDraft}
             />
           ) : (
             <Navigate to='/' replace />

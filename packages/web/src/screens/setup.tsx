@@ -4,7 +4,13 @@ import type { Difficulty, GameMode, AiPersona } from "@storyteller/core";
 import { PERSONAS, getDifficultyConfig, getRandomPersona } from "@storyteller/core";
 
 type Props = {
-  onStart: (mode: GameMode, difficulty: Difficulty, persona: AiPersona, worldPrompt: string) => void;
+  onStart: (
+    mode: GameMode,
+    difficulty: Difficulty,
+    persona: AiPersona,
+    worldPrompt: string,
+    tutorialEnabled: boolean,
+  ) => void;
 };
 
 const Setup = ({ onStart }: Props): React.ReactNode => {
@@ -13,6 +19,7 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [personaId, setPersonaId] = useState("random");
   const [worldPrompt, setWorldPrompt] = useState("");
+  const [tutorialEnabled, setTutorialEnabled] = useState(false);
 
   const config = getDifficultyConfig(difficulty);
 
@@ -21,7 +28,7 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
     if (!persona) {
       return;
     }
-    onStart(mode, difficulty, persona, worldPrompt);
+    onStart(mode, difficulty, persona, worldPrompt, tutorialEnabled);
   };
 
   return (
@@ -75,9 +82,7 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
             </>
           )}
           {mode === "survival" && (
-            <span>
-              Judge: {difficulty === "easy" ? "lenient" : difficulty === "medium" ? "fair" : "ruthless"}
-            </span>
+            <span>Judge: {difficulty === "easy" ? "lenient" : difficulty === "medium" ? "fair" : "ruthless"}</span>
           )}
         </div>
       </div>
@@ -121,6 +126,24 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
           onChange={(e) => setWorldPrompt(e.target.value)}
           rows={3}
         />
+      </div>
+
+      <div className='setup-section'>
+        <label>Tutorial</label>
+        <div className='tutorial-picker'>
+          <button
+            className={`btn ${tutorialEnabled ? "btn-secondary" : "btn-primary"}`}
+            onClick={() => setTutorialEnabled(false)}
+          >
+            Off
+          </button>
+          <button
+            className={`btn ${tutorialEnabled ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setTutorialEnabled(true)}
+          >
+            On
+          </button>
+        </div>
       </div>
 
       <button className='btn btn-primary btn-large' onClick={handleStart}>
