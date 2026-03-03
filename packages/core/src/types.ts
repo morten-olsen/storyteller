@@ -6,6 +6,10 @@ export type Locale = "en" | "da";
 
 export type GameMode = "objective" | "survival";
 
+// --- Narration Style ---
+
+export type NarrationStyle = "simple" | "casual" | "literary" | "ornate";
+
 // --- Difficulty ---
 
 export type Difficulty = "easy" | "medium" | "hard";
@@ -84,6 +88,7 @@ export type GameState = {
   aiCheckpoints: Checkpoint[];
   turns: Turn[];
   isClosingTurn: boolean;
+  narrationStyle: NarrationStyle;
   locale: Locale;
   totalCost: number;
   deathReason?: string;

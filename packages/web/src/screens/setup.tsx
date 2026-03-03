@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type { Difficulty, GameMode, AiPersona } from "@storyteller/core";
-import { PERSONAS, getDifficultyConfig, getRandomPersona } from "@storyteller/core";
+import type { Difficulty, GameMode, AiPersona, NarrationStyle } from "@storyteller/core";
+import { PERSONAS, NARRATION_STYLES, getDifficultyConfig, getRandomPersona } from "@storyteller/core";
 
 type Props = {
   onStart: (
@@ -11,6 +11,7 @@ type Props = {
     persona: AiPersona,
     worldPrompt: string,
     tutorialEnabled: boolean,
+    narrationStyle: NarrationStyle,
   ) => void;
 };
 
@@ -24,6 +25,7 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [personaId, setPersonaId] = useState("random");
   const [worldPrompt, setWorldPrompt] = useState("");
+  const [narrationStyle, setNarrationStyle] = useState<NarrationStyle>("casual");
   const [tutorialEnabled, setTutorialEnabled] = useState(false);
 
   const config = getDifficultyConfig(difficulty);
@@ -33,7 +35,7 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
     if (!persona) {
       return;
     }
-    onStart(mode, difficulty, persona, worldPrompt, tutorialEnabled);
+    onStart(mode, difficulty, persona, worldPrompt, tutorialEnabled, narrationStyle);
   };
 
   const judgeLevel =
@@ -113,6 +115,22 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
           ))}
         </div>
         {personaId !== "random" && <p className='persona-desc'>{t(`personas.${personaId}.description`)}</p>}
+      </div>
+
+      <div className='setup-section'>
+        <label>{t("setup.narrationStyle")}</label>
+        <div className='narration-style-picker'>
+          {NARRATION_STYLES.map((s) => (
+            <button
+              key={s.id}
+              className={`btn ${narrationStyle === s.id ? "btn-primary" : "btn-secondary"}`}
+              onClick={() => setNarrationStyle(s.id)}
+            >
+              {t(`narrationStyles.${s.id}.name`)}
+            </button>
+          ))}
+        </div>
+        <p className='persona-desc'>{t(`narrationStyles.${narrationStyle}.description`)}</p>
       </div>
 
       <div className='setup-section'>

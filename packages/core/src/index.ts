@@ -1,6 +1,7 @@
 // Types
 export type {
   Locale,
+  NarrationStyle,
   GameMode,
   Difficulty,
   DifficultyConfig,
@@ -23,6 +24,10 @@ export { DIFFICULTY_CONFIGS, getDifficultyConfig } from "./difficulty.js";
 
 // Personas
 export { PERSONAS, getPersona, getRandomPersona } from "./personas.js";
+
+// Narration Styles
+export { NARRATION_STYLES, getNarrationStyle } from "./narration-styles.js";
+export type { NarrationStyleDef } from "./narration-styles.js";
 
 // Scoring
 export { computeObjectiveScore, computeSurvivalScore, aggregateScore, playerCheckpointsFulfilled } from "./scoring.js";

@@ -51,8 +51,27 @@
     "tutorial": "Vejledning",
     "off": "Fra",
     "on": "Til",
+    "narrationStyle": "Fort\u00e6llestil",
     "beginStory": "Begynd historien",
     "enterDanger": "Tr\u00e6d ind i faren"
+  },
+  "narrationStyles": {
+    "simple": {
+      "name": "Enkel",
+      "description": "Korte s\u00e6tninger, hverdagsord, let at f\u00f8lge"
+    },
+    "casual": {
+      "name": "Afslappet",
+      "description": "Samtalende og moderne, let l\u00e6sning p\u00e5 farten"
+    },
+    "literary": {
+      "name": "Litter\u00e6r",
+      "description": "Rige beskrivelser, varieret ordforr\u00e5d, litter\u00e6r stil"
+    },
+    "ornate": {
+      "name": "Udsmykket",
+      "description": "T\u00e6t, oph\u00f8jet prosa med poetisk kompleksitet"
+    }
   },
   "game": {
     "final": "Finale",

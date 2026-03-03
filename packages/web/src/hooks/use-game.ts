@@ -6,6 +6,7 @@ import type {
   GameMode,
   Difficulty,
   AiPersona,
+  NarrationStyle,
   LLMConfig,
   Locale,
   StreamCompletionResult,
@@ -69,7 +70,14 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
   const clearError = useCallback(() => setError(null), []);
 
   const startGame = useCallback(
-    async (mode: GameMode, difficulty: Difficulty, persona: AiPersona, worldPrompt: string, tutorial: boolean) => {
+    async (
+      mode: GameMode,
+      difficulty: Difficulty,
+      persona: AiPersona,
+      worldPrompt: string,
+      tutorial: boolean,
+      narrationStyle: NarrationStyle = "casual",
+    ) => {
       setError(null);
       setTutorialEnabled(tutorial);
       setDraftText(null);
@@ -77,13 +85,13 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
       const id = crypto.randomUUID();
       const config = getDifficultyConfig(difficulty);
       const locale = (i18next.language === "da" ? "da" : "en") as Locale;
-      const state = createGame(id, mode, difficulty, config, persona, worldPrompt, locale);
+      const state = createGame(id, mode, difficulty, config, persona, worldPrompt, locale, narrationStyle);
       setGame(state);
       navigate("/game");
       setLoading(true);
 
       try {
-        const result = await generateSetup(llmConfig, mode, config, worldPrompt, locale);
+        const result = await generateSetup(llmConfig, mode, config, worldPrompt, locale, narrationStyle);
         setGame((prev) =>
           prev
             ? applySetupResult(

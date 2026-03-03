@@ -51,8 +51,27 @@
     "tutorial": "Tutorial",
     "off": "Off",
     "on": "On",
+    "narrationStyle": "Narration Style",
     "beginStory": "Begin Story",
     "enterDanger": "Enter the Danger"
+  },
+  "narrationStyles": {
+    "simple": {
+      "name": "Simple",
+      "description": "Short sentences, everyday words, easy to follow"
+    },
+    "casual": {
+      "name": "Casual",
+      "description": "Conversational and modern, easy reading on the go"
+    },
+    "literary": {
+      "name": "Literary",
+      "description": "Rich descriptions, varied vocabulary, literary flair"
+    },
+    "ornate": {
+      "name": "Ornate",
+      "description": "Dense, elevated prose with poetic complexity"
+    }
   },
   "game": {
     "final": "Final",
