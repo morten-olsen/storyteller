@@ -3,6 +3,7 @@ import { computeObjectiveScore, computeSurvivalScore } from "../scoring.js";
 
 import { chatCompletion } from "./client.js";
 import type { ChatMessage } from "./client.js";
+import { localeInstruction } from "./locale-instruction.js";
 
 type JudgeResult = {
   score: TurnScore;
@@ -73,7 +74,7 @@ Respond with ONLY valid JSON:
   "newlyFulfilledAi": []
 }
 
-Where newlyFulfilledPlayer and newlyFulfilledAi are arrays of checkpoint numbers (1-indexed) that are NOW fulfilled but were PENDING before.`,
+Where newlyFulfilledPlayer and newlyFulfilledAi are arrays of checkpoint numbers (1-indexed) that are NOW fulfilled but were PENDING before.${localeInstruction(state.locale)}`,
     },
     {
       role: "user",
@@ -133,7 +134,7 @@ Respond with ONLY valid JSON:
   "survived": true,
   "reason": "1-2 sentence explanation",
   "deathReason": "only if survived is false — a dramatic description of how they died"
-}`,
+}${localeInstruction(state.locale)}`,
     },
     {
       role: "user",

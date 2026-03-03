@@ -1,4 +1,4 @@
-import type { StorageAdapter, SavedGame, GameSummary, LLMConfig } from "@storyteller/core";
+import type { StorageAdapter, SavedGame, GameSummary, LLMConfig, Locale } from "@storyteller/core";
 
 const DB_NAME = "storyteller";
 const DB_VERSION = 1;
@@ -51,6 +51,11 @@ const migrateGame = (game: SavedGame): SavedGame => {
     }
   }
 
+  // Add locale if missing (old games default to English)
+  if (!state.locale) {
+    (state as Record<string, unknown>).locale = "en";
+  }
+
   return game;
 };
 
@@ -89,4 +94,15 @@ const idbStorage: StorageAdapter = {
   },
 };
 
-export { idbStorage };
+const saveLocale = async (locale: Locale): Promise<void> => {
+  const db = await openDB();
+  await req(tx(db, "settings", "readwrite").put(locale, "locale"));
+};
+
+const loadLocale = async (): Promise<Locale | null> => {
+  const db = await openDB();
+  const result = await req(tx(db, "settings", "readonly").get("locale"));
+  return (result as Locale) ?? null;
+};
+
+export { idbStorage, saveLocale, loadLocale };

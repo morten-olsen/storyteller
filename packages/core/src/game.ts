@@ -5,6 +5,7 @@ import type {
   Difficulty,
   DifficultyConfig,
   AiPersona,
+  Locale,
   Checkpoint,
   Turn,
   TurnScore,
@@ -19,6 +20,7 @@ const createGame = (
   config: DifficultyConfig,
   persona: AiPersona,
   worldPrompt: string,
+  locale: Locale = "en",
 ): GameState => {
   return {
     mode,
@@ -34,6 +36,7 @@ const createGame = (
     aiCheckpoints: [],
     turns: [],
     isClosingTurn: false,
+    locale,
     totalCost: 0,
   };
 };

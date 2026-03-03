@@ -1,0 +1,171 @@
+{
+  "common": {
+    "back": "Tilbage",
+    "submit": "Indsend",
+    "save": "Gem",
+    "delete": "Slet",
+    "dismiss": "Afvis",
+    "end": "Afslut",
+    "skip": "Spring over",
+    "next": "N\u00e6ste",
+    "score": "Score",
+    "cost": "Pris",
+    "turns": "Ture",
+    "total": "Total"
+  },
+  "welcome": {
+    "title": "Storyteller",
+    "subtitle": "Et adversarialt narrativt spil",
+    "description": "Du og en AI har hver hemmelige m\u00e5l for historien. I skiftes til at skrive p\u00e5 en f\u00e6lles fort\u00e6lling og fors\u00f8ger at styre den mod jeres m\u00e5l med overbevisende prosa.",
+    "continueGame": "Forts\u00e6t: {{title}}",
+    "continueDefault": "Forts\u00e6t spil",
+    "newGame": "Nyt spil",
+    "configureApi": "Konfigur\u00e9r API",
+    "pastGames": "Tidligere spil",
+    "settings": "Indstillinger"
+  },
+  "setup": {
+    "heading": "Nyt spil",
+    "mode": "Tilstand",
+    "objective": "M\u00e5l",
+    "survival": "Overlevelse",
+    "objectiveDesc": "Konkurr\u00e9r med AI'en om at opfylde hemmelige historiem\u00e5l",
+    "survivalDesc": "Overlev eskalerende farer gennem kreativ skrivning",
+    "difficulty": "Sv\u00e6rhedsgrad",
+    "easy": "Let",
+    "medium": "Middel",
+    "hard": "Sv\u00e6r",
+    "charLimit": "Tegnbegr\u00e6nsning: {{limit}}",
+    "checkpoints": "Kontrolpunkter: {{count}}",
+    "aiVisibility": "AI-synlighed: {{visibility}}",
+    "judge": "Dommer: {{level}}",
+    "judgeLenient": "mild",
+    "judgeFair": "fair",
+    "judgeRuthless": "n\u00e5desl\u00f8s",
+    "persona": "AI-persona",
+    "random": "Tilf\u00e6ldig",
+    "worldPrompt": "Verdensbeskrivelse",
+    "optional": "(valgfrit)",
+    "worldPlaceholderObjective": "Beskriv en setting, et tema, eller lad feltet v\u00e6re tomt for en overraskelse...",
+    "worldPlaceholderSurvival": "Beskriv en farlig setting, eller lad feltet v\u00e6re tomt for en overraskelse...",
+    "tutorial": "Vejledning",
+    "off": "Fra",
+    "on": "Til",
+    "beginStory": "Begynd historien",
+    "enterDanger": "Tr\u00e6d ind i faren"
+  },
+  "game": {
+    "final": "Finale",
+    "survivalLabel": "Overlevelse",
+    "status": "Status",
+    "world": "Verden",
+    "situation": "Situation",
+    "round": "Runde {{number}}",
+    "survivalHeading": "Overlevelse"
+  },
+  "turnInput": {
+    "placeholder": "Skriv dit n\u00e6ste afsnit...",
+    "generating": "Genererer forslag...",
+    "remaining": "{{count}} tilbage"
+  },
+  "storyDisplay": {
+    "you": "Dig",
+    "narrator": "Fort\u00e6ller",
+    "dead": "D\u00d8D"
+  },
+  "scoreBar": {
+    "lastTurnScore": "Sidste turs score",
+    "coherence": "Sammenh\u00e6ng",
+    "proseQuality": "Prosakvalitet",
+    "adaptation": "Tilpasning",
+    "creativity": "Kreativitet",
+    "writingQuality": "Skrivning",
+    "effectiveness": "Effektivitet"
+  },
+  "scoreAbbrev": {
+    "coherence": "sam",
+    "proseQuality": "pro",
+    "adaptation": "til",
+    "creativity": "kre",
+    "writingQuality": "skr",
+    "effectiveness": "eff"
+  },
+  "checkpoints": {
+    "yourObjectives": "Dine m\u00e5l",
+    "aiObjectives": "AI's m\u00e5l",
+    "generating": "Genererer...",
+    "hiddenObjectives": "{{count}} skjulte m\u00e5l"
+  },
+  "aiThinking": {
+    "generating": "Skaber verdenen",
+    "scoring": "Bed\u00f8mmer din prosa",
+    "ai_turn": "Fort\u00e6lleren skriver",
+    "default": "T\u00e6nker"
+  },
+  "tutorial": {
+    "step1Objective": "Dette er din verden. Nedenfor er dine hemmelige m\u00e5l \u2014 opfyld dem f\u00f8r AI'en opfylder sine.",
+    "step1Survival": "Dette er din situation. Du st\u00e5r over for en umiddelbar fare, som du skal skrive dig ud af.",
+    "step2": "Skriv et historieafsnit her. Hold dig under tegnbegr\u00e6nsningen. Indsend med knappen eller Cmd/Ctrl+Enter.",
+    "step3Objective": "En dommer scorer hver tur p\u00e5 sammenh\u00e6ng, prosakvalitet og tilpasning.",
+    "step3Survival": "En dommer scorer kreativitet, skrivekvalitet og effektivitet \u2014 og afg\u00f8r om du overlever.",
+    "step4": "Klar! Vi foresl\u00e5r en f\u00f8rste tur for at komme i gang.",
+    "letsGo": "Lad os g\u00e5"
+  },
+  "gameOver": {
+    "victory": "Sejr",
+    "defeat": "Nederlag",
+    "victorySubtitle": "Din fort\u00e6lling sejrede.",
+    "defeatSubtitle": "AI'en styrede historien mod sine m\u00e5l.",
+    "you": "Dig",
+    "ai": "AI",
+    "yourObjectives": "Dine m\u00e5l",
+    "aiObjectives": "AI's m\u00e5l",
+    "playAgain": "Spil igen",
+    "home": "Hjem",
+    "youDied": "Du d\u00f8de",
+    "rounds": "Runder",
+    "tryAgain": "Pr\u00f8v igen"
+  },
+  "history": {
+    "heading": "Tidligere spil",
+    "empty": "Ingen spil endnu. Start et!",
+    "inProgress": "I gang",
+    "won": "Vundet",
+    "lost": "Tabt",
+    "died": "D\u00f8d",
+    "randomWorld": "Tilf\u00e6ldig verden",
+    "resume": "Genoptag",
+    "view": "Vis",
+    "turns_one": "{{count}} tur",
+    "turns_other": "{{count}} ture"
+  },
+  "settings": {
+    "heading": "Indstillinger",
+    "language": "Sprog",
+    "apiKey": "API-n\u00f8gle",
+    "baseUrl": "Base-URL",
+    "model": "Model"
+  },
+  "personas": {
+    "dramatist": {
+      "name": "Dramatikeren",
+      "description": "Lever for emotionelle h\u00f8jdepunkter. Vil isceens\u00e6tte forræderi, ofre og afsløringer for at maksimere dramatisk spænding."
+    },
+    "trickster": {
+      "name": "Tricksteren",
+      "description": "Elsker vildledning og ironi. Planter r\u00f8de sild og drejer historien i uventede retninger."
+    },
+    "poet": {
+      "name": "Poeten",
+      "description": "Prioriterer smukt sprog og atmosf\u00e6re. S\u00e6nker tempoet for det perfekte billede eller metafor."
+    },
+    "worldbuilder": {
+      "name": "Verdensbyggeren",
+      "description": "Besat af lore og detaljer. Udvider verdenen med historie, fraktioner og sammenkoblede systemer."
+    },
+    "nihilist": {
+      "name": "Nihilisten",
+      "description": "Draget af entropi og forfald. Styrer historier mod tvetydighed, tab og meningens opl\u00f8sning."
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   charLimit: number;
@@ -8,6 +9,7 @@ type Props = {
 };
 
 const TurnInput = ({ charLimit, onSubmit, draftText, draftLoading }: Props): React.ReactNode => {
+  const { t } = useTranslation();
   const [text, setText] = useState("");
   const prevDraftRef = useRef<string | null | undefined>(null);
   const remaining = charLimit - text.length;
@@ -44,16 +46,16 @@ const TurnInput = ({ charLimit, onSubmit, draftText, draftLoading }: Props): Rea
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={draftLoading ? "Generating suggestion..." : "Write your next paragraph..."}
+          placeholder={draftLoading ? t("turnInput.generating") : t("turnInput.placeholder")}
           rows={3}
         />
       </div>
       <div className='turn-input-footer'>
         <span className={`char-count ${isOverLimit ? "over" : remaining < 50 ? "warn" : ""}`}>
-          {remaining} remaining
+          {t("turnInput.remaining", { count: remaining })}
         </span>
         <button className='btn btn-primary btn-small' disabled={isEmpty || isOverLimit} onClick={handleSubmit}>
-          Submit
+          {t("common.submit")}
         </button>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { TurnScore } from "@storyteller/core";
 
 type Props = {
@@ -7,34 +8,35 @@ type Props = {
 
 type Dimension = {
   key: string;
-  label: string;
+  labelKey: string;
   value: number;
 };
 
 const getDimensions = (score: TurnScore): Dimension[] => {
   if (score.kind === "survival") {
     return [
-      { key: "creativity", label: "Creativity", value: score.creativity },
-      { key: "writingQuality", label: "Writing", value: score.writingQuality },
-      { key: "effectiveness", label: "Effective", value: score.effectiveness },
+      { key: "creativity", labelKey: "scoreBar.creativity", value: score.creativity },
+      { key: "writingQuality", labelKey: "scoreBar.writingQuality", value: score.writingQuality },
+      { key: "effectiveness", labelKey: "scoreBar.effectiveness", value: score.effectiveness },
     ];
   }
   return [
-    { key: "coherence", label: "Coherence", value: score.coherence },
-    { key: "proseQuality", label: "Prose Quality", value: score.proseQuality },
-    { key: "adaptation", label: "Adaptation", value: score.adaptation },
+    { key: "coherence", labelKey: "scoreBar.coherence", value: score.coherence },
+    { key: "proseQuality", labelKey: "scoreBar.proseQuality", value: score.proseQuality },
+    { key: "adaptation", labelKey: "scoreBar.adaptation", value: score.adaptation },
   ];
 };
 
 const ScoreBar = ({ score, reason }: Props): React.ReactNode => {
+  const { t } = useTranslation();
   const dimensions = getDimensions(score);
 
   return (
     <div className='score-bar'>
-      <h4>Last Turn Score</h4>
-      {dimensions.map(({ key, label, value }) => (
+      <h4>{t("scoreBar.lastTurnScore")}</h4>
+      {dimensions.map(({ key, labelKey, value }) => (
         <div key={key} className='score-row'>
-          <span className='score-label'>{label}</span>
+          <span className='score-label'>{t(labelKey)}</span>
           <div className='score-track'>
             <div
               className={`score-fill ${value >= 0 ? "positive" : "negative"}`}
@@ -56,7 +58,7 @@ const ScoreBar = ({ score, reason }: Props): React.ReactNode => {
         </div>
       ))}
       <div className='score-total'>
-        <span>Total</span>
+        <span>{t("common.total")}</span>
         <span className={score.total >= 0 ? "positive" : "negative"}>
           {score.total >= 0 ? "+" : ""}
           {score.total.toFixed(1)}

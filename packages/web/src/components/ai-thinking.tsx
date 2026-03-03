@@ -1,17 +1,19 @@
+import { useTranslation } from "react-i18next";
 import type { GamePhase } from "@storyteller/core";
 
 type Props = {
   phase: GamePhase;
 };
 
-const MESSAGES: Partial<Record<GamePhase, string>> = {
-  generating: "Crafting the world",
-  scoring: "Judging your prose",
-  ai_turn: "The narrator is writing",
+const PHASE_KEYS: Partial<Record<GamePhase, string>> = {
+  generating: "aiThinking.generating",
+  scoring: "aiThinking.scoring",
+  ai_turn: "aiThinking.ai_turn",
 };
 
 const AiThinking = ({ phase }: Props): React.ReactNode => {
-  const message = MESSAGES[phase] ?? "Thinking";
+  const { t } = useTranslation();
+  const key = PHASE_KEYS[phase] ?? "aiThinking.default";
   return (
     <div className='ai-thinking'>
       <div className='thinking-dots'>
@@ -19,7 +21,7 @@ const AiThinking = ({ phase }: Props): React.ReactNode => {
         <span />
         <span />
       </div>
-      <span>{message}...</span>
+      <span>{t(key)}...</span>
     </div>
   );
 };

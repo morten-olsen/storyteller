@@ -1,5 +1,6 @@
 // Types
 export type {
+  Locale,
   GameMode,
   Difficulty,
   DifficultyConfig,

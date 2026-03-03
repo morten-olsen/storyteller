@@ -1,3 +1,7 @@
+// --- Locale ---
+
+export type Locale = "en" | "da";
+
 // --- Game Mode ---
 
 export type GameMode = "objective" | "survival";
@@ -80,6 +84,7 @@ export type GameState = {
   aiCheckpoints: Checkpoint[];
   turns: Turn[];
   isClosingTurn: boolean;
+  locale: Locale;
   totalCost: number;
   deathReason?: string;
 };

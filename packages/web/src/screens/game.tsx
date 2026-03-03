@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { GameState } from "@storyteller/core";
 import { aggregateScore } from "@storyteller/core";
 
@@ -25,15 +26,16 @@ type Props = {
 };
 
 const SurvivalStatus = ({ game }: { game: GameState }): React.ReactNode => {
+  const { t } = useTranslation();
   const totalScore = aggregateScore(game.turns);
   const roundNumber = Math.floor(game.turns.length / 2);
   return (
     <div className='survival-status'>
-      <h4>Survival</h4>
+      <h4>{t("game.survivalHeading")}</h4>
       <div className='survival-stats'>
-        <span>Round {roundNumber + 1}</span>
+        <span>{t("game.round", { number: roundNumber + 1 })}</span>
         <span className={totalScore >= 0 ? "positive" : "negative"}>
-          Score: {totalScore >= 0 ? "+" : ""}
+          {t("common.score")}: {totalScore >= 0 ? "+" : ""}
           {totalScore.toFixed(1)}
         </span>
       </div>
@@ -41,23 +43,26 @@ const SurvivalStatus = ({ game }: { game: GameState }): React.ReactNode => {
   );
 };
 
-const MissionBriefing = ({ game }: { game: GameState }): React.ReactNode => (
-  <div className='mission-briefing'>
-    {game.worldDescription && (
-      <div className='mission-world'>
-        <h4>{game.mode === "survival" ? "Situation" : "World"}</h4>
-        <p>{game.worldDescription}</p>
-      </div>
-    )}
-    {game.mode === "objective" && (
-      <Checkpoints
-        playerCheckpoints={game.playerCheckpoints}
-        aiCheckpoints={game.aiCheckpoints}
-        aiVisibility={game.config.aiVisibility}
-      />
-    )}
-  </div>
-);
+const MissionBriefing = ({ game }: { game: GameState }): React.ReactNode => {
+  const { t } = useTranslation();
+  return (
+    <div className='mission-briefing'>
+      {game.worldDescription && (
+        <div className='mission-world'>
+          <h4>{game.mode === "survival" ? t("game.situation") : t("game.world")}</h4>
+          <p>{game.worldDescription}</p>
+        </div>
+      )}
+      {game.mode === "objective" && (
+        <Checkpoints
+          playerCheckpoints={game.playerCheckpoints}
+          aiCheckpoints={game.aiCheckpoints}
+          aiVisibility={game.config.aiVisibility}
+        />
+      )}
+    </div>
+  );
+};
 
 const Game = ({
   game,
@@ -73,6 +78,7 @@ const Game = ({
   onGenerateDraft,
 }: Props): React.ReactNode => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [panelOpen, setPanelOpen] = useState(false);
   const [tutorialActive, setTutorialActive] = useState(tutorialEnabled);
   const draftTriggeredRef = useRef(false);
@@ -103,15 +109,15 @@ const Game = ({
           </button>
           <h3>{game.title || game.persona.name}</h3>
           <span className='difficulty-badge'>{game.difficulty}</span>
-          {isSurvival && <span className='closing-badge'>Survival</span>}
-          {!isSurvival && game.isClosingTurn && <span className='closing-badge'>Final</span>}
+          {isSurvival && <span className='closing-badge'>{t("game.survivalLabel")}</span>}
+          {!isSurvival && game.isClosingTurn && <span className='closing-badge'>{t("game.final")}</span>}
         </div>
         <div className='game-header-right'>
           <button className={`status-toggle${panelOpen ? " active" : ""}`} onClick={() => setPanelOpen(!panelOpen)}>
-            {panelOpen ? "\u25BE" : "\u25B8"} {isSurvival ? "Score" : "Status"}
+            {panelOpen ? "\u25BE" : "\u25B8"} {isSurvival ? t("common.score") : t("game.status")}
           </button>
           <button className='btn btn-ghost btn-small' onClick={onEndGame}>
-            End
+            {t("common.end")}
           </button>
         </div>
       </div>
@@ -120,7 +126,7 @@ const Game = ({
         <div className='error-bar'>
           <span>{error}</span>
           <button className='btn btn-ghost btn-small' onClick={onClearError}>
-            Dismiss
+            {t("common.dismiss")}
           </button>
         </div>
       )}
@@ -139,7 +145,7 @@ const Game = ({
           )}
           {hasTurns && game.worldDescription && (
             <details className='panel-world'>
-              <summary>{isSurvival ? "Situation" : "World"}</summary>
+              <summary>{isSurvival ? t("game.situation") : t("game.world")}</summary>
               <p>{game.worldDescription}</p>
             </details>
           )}

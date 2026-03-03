@@ -2,6 +2,7 @@ import type { LLMConfig, GameState } from "../types.js";
 
 import { chatCompletion } from "./client.js";
 import type { ChatMessage } from "./client.js";
+import { localeInstruction } from "./locale-instruction.js";
 
 type DraftTurnResult = { text: string; cost: number };
 
@@ -40,7 +41,7 @@ Write a single draft paragraph that:
 - Uses vivid, engaging prose
 - Stays UNDER ${state.config.charLimit} characters
 
-Output ONLY the paragraph text, nothing else.`,
+Output ONLY the paragraph text, nothing else.${localeInstruction(state.locale)}`,
     },
     {
       role: "user",
@@ -68,7 +69,7 @@ Write a single draft paragraph that:
 - Uses vivid, engaging prose
 - Stays UNDER ${state.config.charLimit} characters
 
-Output ONLY the paragraph text, nothing else.`,
+Output ONLY the paragraph text, nothing else.${localeInstruction(state.locale)}`,
     },
     {
       role: "user",

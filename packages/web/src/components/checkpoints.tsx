@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { Checkpoint } from "@storyteller/core";
 
 type Props = {
@@ -7,12 +8,14 @@ type Props = {
 };
 
 const Checkpoints = ({ playerCheckpoints, aiCheckpoints, aiVisibility }: Props): React.ReactNode => {
+  const { t } = useTranslation();
+
   return (
     <div className='checkpoints'>
       <div className='checkpoint-section'>
-        <h4>Your Objectives</h4>
+        <h4>{t("checkpoints.yourObjectives")}</h4>
         {playerCheckpoints.length === 0 ? (
-          <p className='empty-hint'>Generating...</p>
+          <p className='empty-hint'>{t("checkpoints.generating")}</p>
         ) : (
           playerCheckpoints.map((c) => (
             <div key={c.id} className={`checkpoint-item ${c.fulfilled ? "fulfilled" : ""}`}>
@@ -24,11 +27,11 @@ const Checkpoints = ({ playerCheckpoints, aiCheckpoints, aiVisibility }: Props):
       </div>
 
       <div className='checkpoint-section'>
-        <h4>AI Objectives</h4>
+        <h4>{t("checkpoints.aiObjectives")}</h4>
         {aiCheckpoints.length === 0 ? (
-          <p className='empty-hint'>Generating...</p>
+          <p className='empty-hint'>{t("checkpoints.generating")}</p>
         ) : aiVisibility === "hidden" ? (
-          <p className='hidden-hint'>{aiCheckpoints.length} hidden objectives</p>
+          <p className='hidden-hint'>{t("checkpoints.hiddenObjectives", { count: aiCheckpoints.length })}</p>
         ) : (
           aiCheckpoints.map((c) => (
             <div key={c.id} className={`checkpoint-item ${c.fulfilled ? "fulfilled" : ""}`}>

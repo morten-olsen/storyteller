@@ -1,0 +1,171 @@
+{
+  "common": {
+    "back": "Back",
+    "submit": "Submit",
+    "save": "Save",
+    "delete": "Delete",
+    "dismiss": "Dismiss",
+    "end": "End",
+    "skip": "Skip",
+    "next": "Next",
+    "score": "Score",
+    "cost": "Cost",
+    "turns": "Turns",
+    "total": "Total"
+  },
+  "welcome": {
+    "title": "Storyteller",
+    "subtitle": "An adversarial narrative game",
+    "description": "You and an AI each have secret story objectives. Take turns writing a shared narrative, steering it toward your goals while crafting compelling prose.",
+    "continueGame": "Continue: {{title}}",
+    "continueDefault": "Continue Game",
+    "newGame": "New Game",
+    "configureApi": "Configure API",
+    "pastGames": "Past Games",
+    "settings": "Settings"
+  },
+  "setup": {
+    "heading": "New Game",
+    "mode": "Mode",
+    "objective": "Objective",
+    "survival": "Survival",
+    "objectiveDesc": "Compete with the AI to fulfill secret story objectives",
+    "survivalDesc": "Survive escalating dangers through creative writing",
+    "difficulty": "Difficulty",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "charLimit": "Character limit: {{limit}}",
+    "checkpoints": "Checkpoints: {{count}}",
+    "aiVisibility": "AI visibility: {{visibility}}",
+    "judge": "Judge: {{level}}",
+    "judgeLenient": "lenient",
+    "judgeFair": "fair",
+    "judgeRuthless": "ruthless",
+    "persona": "AI Persona",
+    "random": "Random",
+    "worldPrompt": "World Prompt",
+    "optional": "(optional)",
+    "worldPlaceholderObjective": "Describe a setting, theme, or leave blank for a surprise...",
+    "worldPlaceholderSurvival": "Describe a dangerous setting, or leave blank for a surprise...",
+    "tutorial": "Tutorial",
+    "off": "Off",
+    "on": "On",
+    "beginStory": "Begin Story",
+    "enterDanger": "Enter the Danger"
+  },
+  "game": {
+    "final": "Final",
+    "survivalLabel": "Survival",
+    "status": "Status",
+    "world": "World",
+    "situation": "Situation",
+    "round": "Round {{number}}",
+    "survivalHeading": "Survival"
+  },
+  "turnInput": {
+    "placeholder": "Write your next paragraph...",
+    "generating": "Generating suggestion...",
+    "remaining": "{{count}} remaining"
+  },
+  "storyDisplay": {
+    "you": "You",
+    "narrator": "Narrator",
+    "dead": "DEAD"
+  },
+  "scoreBar": {
+    "lastTurnScore": "Last Turn Score",
+    "coherence": "Coherence",
+    "proseQuality": "Prose Quality",
+    "adaptation": "Adaptation",
+    "creativity": "Creativity",
+    "writingQuality": "Writing",
+    "effectiveness": "Effective"
+  },
+  "scoreAbbrev": {
+    "coherence": "coh",
+    "proseQuality": "pro",
+    "adaptation": "adp",
+    "creativity": "cre",
+    "writingQuality": "wri",
+    "effectiveness": "eff"
+  },
+  "checkpoints": {
+    "yourObjectives": "Your Objectives",
+    "aiObjectives": "AI Objectives",
+    "generating": "Generating...",
+    "hiddenObjectives": "{{count}} hidden objectives"
+  },
+  "aiThinking": {
+    "generating": "Crafting the world",
+    "scoring": "Judging your prose",
+    "ai_turn": "The narrator is writing",
+    "default": "Thinking"
+  },
+  "tutorial": {
+    "step1Objective": "This is your world. Below are your secret objectives — fulfill them before the AI fulfills theirs.",
+    "step1Survival": "This is your situation. You face an immediate danger you must write your way out of.",
+    "step2": "Write a story paragraph here. Stay under the character limit. Submit with the button or Cmd/Ctrl+Enter.",
+    "step3Objective": "A judge scores each turn on coherence, prose quality, and adaptation.",
+    "step3Survival": "A judge scores creativity, writing quality, and effectiveness — and decides if you survive.",
+    "step4": "Ready! We'll suggest a first turn to get you started.",
+    "letsGo": "Let's Go"
+  },
+  "gameOver": {
+    "victory": "Victory",
+    "defeat": "Defeat",
+    "victorySubtitle": "Your narrative prevailed.",
+    "defeatSubtitle": "The AI steered the story to its ends.",
+    "you": "You",
+    "ai": "AI",
+    "yourObjectives": "Your Objectives",
+    "aiObjectives": "AI Objectives",
+    "playAgain": "Play Again",
+    "home": "Home",
+    "youDied": "You Died",
+    "rounds": "Rounds",
+    "tryAgain": "Try Again"
+  },
+  "history": {
+    "heading": "Past Games",
+    "empty": "No games yet. Start one!",
+    "inProgress": "In Progress",
+    "won": "Won",
+    "lost": "Lost",
+    "died": "Died",
+    "randomWorld": "Random world",
+    "resume": "Resume",
+    "view": "View",
+    "turns_one": "{{count}} turn",
+    "turns_other": "{{count}} turns"
+  },
+  "settings": {
+    "heading": "Settings",
+    "language": "Language",
+    "apiKey": "API Key",
+    "baseUrl": "Base URL",
+    "model": "Model"
+  },
+  "personas": {
+    "dramatist": {
+      "name": "The Dramatist",
+      "description": "Lives for emotional peaks. Will engineer betrayals, sacrifices, and revelations to maximize dramatic tension."
+    },
+    "trickster": {
+      "name": "The Trickster",
+      "description": "Loves misdirection and irony. Will plant red herrings and twist the story in unexpected directions."
+    },
+    "poet": {
+      "name": "The Poet",
+      "description": "Prioritizes beautiful language and atmosphere. Will slow the pace for a perfect image or metaphor."
+    },
+    "worldbuilder": {
+      "name": "The Worldbuilder",
+      "description": "Obsessed with lore and detail. Will expand the world with history, factions, and interconnected systems."
+    },
+    "nihilist": {
+      "name": "The Nihilist",
+      "description": "Drawn to entropy and decay. Will steer stories toward ambiguity, loss, and the dissolution of meaning."
+    }
+  }
+}

@@ -1,7 +1,8 @@
-import type { LLMConfig, DifficultyConfig, GameMode, Checkpoint } from "../types.js";
+import type { LLMConfig, DifficultyConfig, GameMode, Locale, Checkpoint } from "../types.js";
 
 import { chatCompletion } from "./client.js";
 import type { ChatMessage } from "./client.js";
+import { localeInstruction } from "./locale-instruction.js";
 
 type SetupResult = {
   title: string;
@@ -15,6 +16,7 @@ const generateObjectiveSetup = async (
   config: LLMConfig,
   difficultyConfig: DifficultyConfig,
   worldPrompt: string,
+  locale: Locale = "en",
 ): Promise<SetupResult> => {
   const playerCount = difficultyConfig.checkpointCount.player;
   const aiCount = difficultyConfig.checkpointCount.ai;
@@ -39,7 +41,7 @@ Respond with ONLY valid JSON in this exact format:
   "worldDescription": "...",
   "playerCheckpoints": ["checkpoint 1", "checkpoint 2"],
   "aiCheckpoints": ["checkpoint 1", "checkpoint 2"]
-}`,
+}${localeInstruction(locale)}`,
     },
     {
       role: "user",
@@ -69,7 +71,11 @@ Respond with ONLY valid JSON in this exact format:
   };
 };
 
-const generateSurvivalSetup = async (config: LLMConfig, worldPrompt: string): Promise<SetupResult> => {
+const generateSurvivalSetup = async (
+  config: LLMConfig,
+  worldPrompt: string,
+  locale: Locale = "en",
+): Promise<SetupResult> => {
   const messages: ChatMessage[] = [
     {
       role: "system",
@@ -85,7 +91,7 @@ Respond with ONLY valid JSON in this exact format:
 {
   "title": "A short, evocative story title",
   "worldDescription": "... ending with the immediate danger the player faces"
-}`,
+}${localeInstruction(locale)}`,
     },
     {
       role: "user",
@@ -112,11 +118,12 @@ const generateSetup = async (
   mode: GameMode,
   difficultyConfig: DifficultyConfig,
   worldPrompt: string,
+  locale: Locale = "en",
 ): Promise<SetupResult> => {
   if (mode === "survival") {
-    return generateSurvivalSetup(config, worldPrompt);
+    return generateSurvivalSetup(config, worldPrompt, locale);
   }
-  return generateObjectiveSetup(config, difficultyConfig, worldPrompt);
+  return generateObjectiveSetup(config, difficultyConfig, worldPrompt, locale);
 };
 
 export type { SetupResult };

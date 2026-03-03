@@ -1,33 +1,33 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import type { GameMode } from "@storyteller/core";
 
 type TutorialStep = {
   targetSelector: string | null;
-  objective: string;
-  survival: string;
+  objectiveKey: string;
+  survivalKey: string;
 };
 
 const STEPS: TutorialStep[] = [
   {
     targetSelector: ".mission-world",
-    objective: "This is your world. Below are your secret objectives — fulfill them before the AI fulfills theirs.",
-    survival: "This is your situation. You face an immediate danger you must write your way out of.",
+    objectiveKey: "tutorial.step1Objective",
+    survivalKey: "tutorial.step1Survival",
   },
   {
     targetSelector: ".turn-input",
-    objective:
-      "Write a story paragraph here. Stay under the character limit. Submit with the button or Cmd/Ctrl+Enter.",
-    survival: "Write a story paragraph here. Stay under the character limit. Submit with the button or Cmd/Ctrl+Enter.",
+    objectiveKey: "tutorial.step2",
+    survivalKey: "tutorial.step2",
   },
   {
     targetSelector: null,
-    objective: "A judge scores each turn on coherence, prose quality, and adaptation.",
-    survival: "A judge scores creativity, writing quality, and effectiveness — and decides if you survive.",
+    objectiveKey: "tutorial.step3Objective",
+    survivalKey: "tutorial.step3Survival",
   },
   {
     targetSelector: null,
-    objective: "Ready! We'll suggest a first turn to get you started.",
-    survival: "Ready! We'll suggest a first turn to get you started.",
+    objectiveKey: "tutorial.step4",
+    survivalKey: "tutorial.step4",
   },
 ];
 
@@ -39,6 +39,7 @@ type Props = {
 type SpotlightRect = { top: number; left: number; width: number; height: number };
 
 const TutorialOverlay = ({ mode, onComplete }: Props): React.ReactNode => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [spotlightRect, setSpotlightRect] = useState<SpotlightRect | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -97,7 +98,7 @@ const TutorialOverlay = ({ mode, onComplete }: Props): React.ReactNode => {
     }
   };
 
-  const text = mode === "survival" ? step.survival : step.objective;
+  const textKey = mode === "survival" ? step.survivalKey : step.objectiveKey;
 
   return (
     <div className='tutorial-overlay' ref={overlayRef}>
@@ -122,7 +123,7 @@ const TutorialOverlay = ({ mode, onComplete }: Props): React.ReactNode => {
             : undefined
         }
       >
-        <p>{text}</p>
+        <p>{t(textKey)}</p>
         <div className='tutorial-nav'>
           <div className='tutorial-dots'>
             {STEPS.map((_, i) => (
@@ -131,10 +132,10 @@ const TutorialOverlay = ({ mode, onComplete }: Props): React.ReactNode => {
           </div>
           <div className='tutorial-nav-buttons'>
             <button className='btn btn-ghost btn-small' onClick={onComplete}>
-              Skip
+              {t("common.skip")}
             </button>
             <button className='btn btn-primary btn-small' onClick={handleNext}>
-              {isLast ? "Let's Go" : "Next"}
+              {isLast ? t("tutorial.letsGo") : t("common.next")}
             </button>
           </div>
         </div>

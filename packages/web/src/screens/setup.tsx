@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { Difficulty, GameMode, AiPersona } from "@storyteller/core";
 import { PERSONAS, getDifficultyConfig, getRandomPersona } from "@storyteller/core";
 
@@ -13,8 +14,12 @@ type Props = {
   ) => void;
 };
 
+const MODES: GameMode[] = ["objective", "survival"];
+const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
+
 const Setup = ({ onStart }: Props): React.ReactNode => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<GameMode>("objective");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [personaId, setPersonaId] = useState("random");
@@ -31,70 +36,71 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
     onStart(mode, difficulty, persona, worldPrompt, tutorialEnabled);
   };
 
+  const judgeLevel =
+    difficulty === "easy"
+      ? t("setup.judgeLenient")
+      : difficulty === "medium"
+        ? t("setup.judgeFair")
+        : t("setup.judgeRuthless");
+
   return (
     <div className='screen setup'>
       <button className='btn btn-ghost back-btn' onClick={() => navigate("/")}>
-        &larr; Back
+        &larr; {t("common.back")}
       </button>
-      <h2>New Game</h2>
+      <h2>{t("setup.heading")}</h2>
 
       <div className='setup-section'>
-        <label>Mode</label>
+        <label>{t("setup.mode")}</label>
         <div className='mode-picker'>
-          {(["objective", "survival"] as GameMode[]).map((m) => (
+          {MODES.map((m) => (
             <button
               key={m}
               className={`btn ${mode === m ? "btn-primary" : "btn-secondary"}`}
               onClick={() => setMode(m)}
             >
-              {m.charAt(0).toUpperCase() + m.slice(1)}
+              {t(`setup.${m}`)}
             </button>
           ))}
         </div>
         <div className='difficulty-info'>
-          {mode === "objective" ? (
-            <span>Compete with the AI to fulfill secret story objectives</span>
-          ) : (
-            <span>Survive escalating dangers through creative writing</span>
-          )}
+          <span>{mode === "objective" ? t("setup.objectiveDesc") : t("setup.survivalDesc")}</span>
         </div>
       </div>
 
       <div className='setup-section'>
-        <label>Difficulty</label>
+        <label>{t("setup.difficulty")}</label>
         <div className='difficulty-picker'>
-          {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
+          {DIFFICULTIES.map((d) => (
             <button
               key={d}
               className={`btn ${difficulty === d ? "btn-primary" : "btn-secondary"}`}
               onClick={() => setDifficulty(d)}
             >
-              {d.charAt(0).toUpperCase() + d.slice(1)}
+              {t(`setup.${d}`)}
             </button>
           ))}
         </div>
         <div className='difficulty-info'>
-          <span>Character limit: {config.charLimit}</span>
+          <span>{t("setup.charLimit", { limit: config.charLimit })}</span>
           {mode === "objective" && (
             <>
-              <span>Checkpoints: {config.checkpointCount.player}</span>
-              <span>AI visibility: {config.aiVisibility}</span>
+              <span>{t("setup.checkpoints", { count: config.checkpointCount.player })}</span>
+              <span>{t("setup.aiVisibility", { visibility: config.aiVisibility })}</span>
             </>
           )}
-          {mode === "survival" && (
-            <span>Judge: {difficulty === "easy" ? "lenient" : difficulty === "medium" ? "fair" : "ruthless"}</span>
-          )}
+          {mode === "survival" && <span>{t("setup.judge", { level: judgeLevel })}</span>}
         </div>
       </div>
 
       <div className='setup-section'>
-        <label>AI Persona</label>
+        <label>{t("setup.persona")}</label>
         <div className='persona-picker'>
           <button
             className={`btn ${personaId === "random" ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setPersonaId("random")}
           >
-            Random
+            {t("setup.random")}
           </button>
           {PERSONAS.map((p) => (
             <button
@@ -102,26 +108,20 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
               className={`btn ${personaId === p.id ? "btn-primary" : "btn-secondary"}`}
               onClick={() => setPersonaId(p.id)}
             >
-              {p.name}
+              {t(`personas.${p.id}.name`)}
             </button>
           ))}
         </div>
-        {personaId !== "random" && (
-          <p className='persona-desc'>{PERSONAS.find((p) => p.id === personaId)?.description}</p>
-        )}
+        {personaId !== "random" && <p className='persona-desc'>{t(`personas.${personaId}.description`)}</p>}
       </div>
 
       <div className='setup-section'>
         <label>
-          World Prompt <span className='optional'>(optional)</span>
+          {t("setup.worldPrompt")} <span className='optional'>{t("setup.optional")}</span>
         </label>
         <textarea
           className='world-input'
-          placeholder={
-            mode === "survival"
-              ? "Describe a dangerous setting, or leave blank for a surprise..."
-              : "Describe a setting, theme, or leave blank for a surprise..."
-          }
+          placeholder={mode === "survival" ? t("setup.worldPlaceholderSurvival") : t("setup.worldPlaceholderObjective")}
           value={worldPrompt}
           onChange={(e) => setWorldPrompt(e.target.value)}
           rows={3}
@@ -129,25 +129,25 @@ const Setup = ({ onStart }: Props): React.ReactNode => {
       </div>
 
       <div className='setup-section'>
-        <label>Tutorial</label>
+        <label>{t("setup.tutorial")}</label>
         <div className='tutorial-picker'>
           <button
             className={`btn ${tutorialEnabled ? "btn-secondary" : "btn-primary"}`}
             onClick={() => setTutorialEnabled(false)}
           >
-            Off
+            {t("setup.off")}
           </button>
           <button
             className={`btn ${tutorialEnabled ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setTutorialEnabled(true)}
           >
-            On
+            {t("setup.on")}
           </button>
         </div>
       </div>
 
       <button className='btn btn-primary btn-large' onClick={handleStart}>
-        {mode === "survival" ? "Enter the Danger" : "Begin Story"}
+        {mode === "survival" ? t("setup.enterDanger") : t("setup.beginStory")}
       </button>
     </div>
   );

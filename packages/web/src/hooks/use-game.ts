@@ -1,6 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { NavigateFunction } from "react-router-dom";
-import type { GameState, GameMode, Difficulty, AiPersona, LLMConfig, StreamCompletionResult } from "@storyteller/core";
+import i18next from "i18next";
+import type {
+  GameState,
+  GameMode,
+  Difficulty,
+  AiPersona,
+  LLMConfig,
+  Locale,
+  StreamCompletionResult,
+} from "@storyteller/core";
 import {
   getDifficultyConfig,
   createGame,
@@ -67,13 +76,14 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
       setDraftLoading(false);
       const id = crypto.randomUUID();
       const config = getDifficultyConfig(difficulty);
-      const state = createGame(id, mode, difficulty, config, persona, worldPrompt);
+      const locale = (i18next.language === "da" ? "da" : "en") as Locale;
+      const state = createGame(id, mode, difficulty, config, persona, worldPrompt, locale);
       setGame(state);
       navigate("/game");
       setLoading(true);
 
       try {
-        const result = await generateSetup(llmConfig, mode, config, worldPrompt);
+        const result = await generateSetup(llmConfig, mode, config, worldPrompt, locale);
         setGame((prev) =>
           prev
             ? applySetupResult(

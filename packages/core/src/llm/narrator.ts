@@ -2,6 +2,7 @@ import type { LLMConfig, GameState } from "../types.js";
 
 import { chatCompletion, chatCompletionStream } from "./client.js";
 import type { ChatMessage, StreamCallbacks, ChatCompletionResult, StreamCompletionResult } from "./client.js";
+import { localeInstruction } from "./locale-instruction.js";
 
 const buildObjectiveMessages = (state: GameState): ChatMessage[] => {
   const storyContext = state.turns.map((t) => t.text).join("\n\n");
@@ -25,7 +26,7 @@ RULES:
 - Maintain story coherence — build on what came before
 - Subtly steer toward your objectives without breaking the narrative
 - Do NOT reference the game mechanics, scoring, or objectives directly
-- Write compelling, engaging prose`;
+- Write compelling, engaging prose${localeInstruction(state.locale)}`;
 
   const messages: ChatMessage[] = [{ role: "system", content: system }];
 
@@ -61,7 +62,7 @@ RULES:
 - Write exactly ONE paragraph, no more than ${state.config.charLimit} characters
 - Each new danger should escalate in severity and creativity
 - Do NOT reference game mechanics, scoring, or survival checks directly
-- Write compelling, vivid prose that raises the stakes`;
+- Write compelling, vivid prose that raises the stakes${localeInstruction(state.locale)}`;
 
   const messages: ChatMessage[] = [{ role: "system", content: system }];
 

@@ -1,14 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type { LLMConfig } from "@storyteller/core";
+import { useTranslation } from "react-i18next";
+import type { LLMConfig, Locale } from "@storyteller/core";
+
+import { saveLocale } from "../storage.ts";
 
 type Props = {
   config: LLMConfig;
   onSave: (config: LLMConfig) => void;
 };
 
+const LOCALES: { value: Locale; label: string }[] = [
+  { value: "en", label: "English" },
+  { value: "da", label: "Dansk" },
+];
+
 const Settings = ({ config, onSave }: Props): React.ReactNode => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [apiKey, setApiKey] = useState(config.apiKey);
   const [baseUrl, setBaseUrl] = useState(config.baseUrl);
   const [model, setModel] = useState(config.model);
@@ -19,6 +28,11 @@ const Settings = ({ config, onSave }: Props): React.ReactNode => {
     setModel(config.model);
   }, [config]);
 
+  const handleLanguageChange = async (locale: Locale): Promise<void> => {
+    await i18n.changeLanguage(locale);
+    await saveLocale(locale);
+  };
+
   const handleSave = () => {
     onSave({ apiKey, baseUrl, model });
     navigate("/");
@@ -27,13 +41,28 @@ const Settings = ({ config, onSave }: Props): React.ReactNode => {
   return (
     <div className='screen settings'>
       <button className='btn btn-ghost back-btn' onClick={() => navigate("/")}>
-        &larr; Back
+        &larr; {t("common.back")}
       </button>
-      <h2>Settings</h2>
+      <h2>{t("settings.heading")}</h2>
 
       <div className='settings-form'>
         <div className='field'>
-          <label>API Key</label>
+          <label>{t("settings.language")}</label>
+          <div className='language-picker'>
+            {LOCALES.map((loc) => (
+              <button
+                key={loc.value}
+                className={`btn ${i18n.language === loc.value ? "btn-primary" : "btn-secondary"}`}
+                onClick={() => handleLanguageChange(loc.value)}
+              >
+                {loc.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className='field'>
+          <label>{t("settings.apiKey")}</label>
           <input
             type='password'
             value={apiKey}
@@ -43,7 +72,7 @@ const Settings = ({ config, onSave }: Props): React.ReactNode => {
         </div>
 
         <div className='field'>
-          <label>Base URL</label>
+          <label>{t("settings.baseUrl")}</label>
           <input
             type='url'
             value={baseUrl}
@@ -53,7 +82,7 @@ const Settings = ({ config, onSave }: Props): React.ReactNode => {
         </div>
 
         <div className='field'>
-          <label>Model</label>
+          <label>{t("settings.model")}</label>
           <input
             type='text'
             value={model}
@@ -63,7 +92,7 @@ const Settings = ({ config, onSave }: Props): React.ReactNode => {
         </div>
 
         <button className='btn btn-primary' onClick={handleSave}>
-          Save
+          {t("common.save")}
         </button>
       </div>
     </div>

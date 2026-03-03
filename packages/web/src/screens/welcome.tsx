@@ -1,4 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { Locale } from "@storyteller/core";
+
+import { saveLocale } from "../storage.ts";
 
 type Props = {
   isConfigured: boolean;
@@ -9,24 +13,33 @@ type Props = {
 
 const Welcome = ({ isConfigured, activeGameId, activeGameTitle, onResume }: Props): React.ReactNode => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  const handleLanguageToggle = async (): Promise<void> => {
+    const next: Locale = i18n.language === "da" ? "en" : "da";
+    await i18n.changeLanguage(next);
+    await saveLocale(next);
+  };
 
   return (
     <div className='screen welcome'>
+      <div className='welcome-lang'>
+        <button className='btn btn-ghost btn-small' onClick={handleLanguageToggle}>
+          {i18n.language === "da" ? "EN" : "DA"}
+        </button>
+      </div>
       <h1 className='welcome-title'>
-        Storyteller
+        {t("welcome.title")}
         <span className='welcome-cursor' />
       </h1>
       <div className='welcome-rule' />
-      <p className='welcome-subtitle'>An adversarial narrative game</p>
-      <p className='welcome-desc'>
-        You and an AI each have secret story objectives. Take turns writing a shared narrative, steering it toward your
-        goals while crafting compelling prose.
-      </p>
+      <p className='welcome-subtitle'>{t("welcome.subtitle")}</p>
+      <p className='welcome-desc'>{t("welcome.description")}</p>
 
       <div className='welcome-actions'>
         {activeGameId && (
           <button className='btn btn-primary' onClick={() => onResume(activeGameId)}>
-            Continue{activeGameTitle ? `: ${activeGameTitle}` : " Game"}
+            {activeGameTitle ? t("welcome.continueGame", { title: activeGameTitle }) : t("welcome.continueDefault")}
           </button>
         )}
         {isConfigured ? (
@@ -34,18 +47,18 @@ const Welcome = ({ isConfigured, activeGameId, activeGameTitle, onResume }: Prop
             className={`btn ${activeGameId ? "btn-secondary" : "btn-primary"}`}
             onClick={() => navigate("/setup")}
           >
-            New Game
+            {t("welcome.newGame")}
           </button>
         ) : (
           <button className='btn btn-primary' onClick={() => navigate("/settings")}>
-            Configure API
+            {t("welcome.configureApi")}
           </button>
         )}
         <button className='btn btn-secondary' onClick={() => navigate("/history")}>
-          Past Games
+          {t("welcome.pastGames")}
         </button>
         <button className='btn btn-ghost' onClick={() => navigate("/settings")}>
-          Settings
+          {t("welcome.settings")}
         </button>
       </div>
     </div>
