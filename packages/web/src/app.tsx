@@ -8,10 +8,20 @@ import { Game } from "./screens/game.tsx";
 import { GameOver } from "./screens/game-over.tsx";
 import { History } from "./screens/history.tsx";
 import { Settings } from "./components/settings.tsx";
+import { Onboarding } from "./screens/onboarding.tsx";
 
 const AppRoutes = (): React.ReactNode => {
   const navigate = useNavigate();
-  const { config, setConfig, isConfigured, loaded } = useLLM();
+  const {
+    settings,
+    setSettings,
+    getClient,
+    isConfigured,
+    loaded,
+    localModelLoading,
+    localModelProgress,
+    localModelStatus,
+  } = useLLM();
   const {
     game,
     loading,
@@ -28,7 +38,7 @@ const AppRoutes = (): React.ReactNode => {
     endGame,
     resumeGame,
     generateDraft,
-  } = useGame(config, navigate);
+  } = useGame(getClient, navigate);
 
   if (!loaded) {
     return null;
@@ -72,7 +82,19 @@ const AppRoutes = (): React.ReactNode => {
       />
       <Route path='/game-over' element={game ? <GameOver game={game} /> : <Navigate to='/' replace />} />
       <Route path='/history' element={<History onResume={resumeGame} />} />
-      <Route path='/settings' element={<Settings config={config} onSave={setConfig} />} />
+      <Route path='/onboarding' element={<Onboarding onSave={setSettings} />} />
+      <Route
+        path='/settings'
+        element={
+          <Settings
+            settings={settings}
+            onSave={setSettings}
+            localModelLoading={localModelLoading}
+            localModelProgress={localModelProgress}
+            localModelStatus={localModelStatus}
+          />
+        }
+      />
       <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
   );

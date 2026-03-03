@@ -1,7 +1,12 @@
-import type { LLMConfig, GameState } from "../types.js";
+import type { GameState } from "../types.js";
 
-import { chatCompletion, chatCompletionStream } from "./client.js";
-import type { ChatMessage, StreamCallbacks, ChatCompletionResult, StreamCompletionResult } from "./client.js";
+import type {
+  ChatMessage,
+  StreamCallbacks,
+  ChatCompletionResult,
+  StreamCompletionResult,
+  ChatClient,
+} from "./client.js";
 import { localeInstruction } from "./locale-instruction.js";
 import { styleInstruction } from "./style-instruction.js";
 
@@ -82,18 +87,18 @@ const buildNarratorMessages = (state: GameState): ChatMessage[] => {
   return buildObjectiveMessages(state);
 };
 
-const generateAiTurn = async (config: LLMConfig, state: GameState): Promise<ChatCompletionResult> => {
+const generateAiTurn = async (client: ChatClient, state: GameState): Promise<ChatCompletionResult> => {
   const messages = buildNarratorMessages(state);
-  return chatCompletion(config, { messages, maxTokens: 500 });
+  return client.complete({ messages, maxTokens: 500 });
 };
 
 const streamAiTurn = async (
-  config: LLMConfig,
+  client: ChatClient,
   state: GameState,
   callbacks: StreamCallbacks,
 ): Promise<StreamCompletionResult> => {
   const messages = buildNarratorMessages(state);
-  return chatCompletionStream(config, { messages, maxTokens: 500 }, callbacks);
+  return client.stream({ messages, maxTokens: 500 }, callbacks);
 };
 
 export { generateAiTurn, streamAiTurn };

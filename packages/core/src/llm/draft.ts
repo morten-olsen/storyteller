@@ -1,7 +1,6 @@
-import type { LLMConfig, GameState } from "../types.js";
+import type { GameState } from "../types.js";
 
-import { chatCompletion } from "./client.js";
-import type { ChatMessage } from "./client.js";
+import type { ChatMessage, ChatClient } from "./client.js";
 import { localeInstruction } from "./locale-instruction.js";
 import { styleInstruction } from "./style-instruction.js";
 
@@ -19,7 +18,7 @@ const truncateAtSentence = (text: string, limit: number): string => {
   return truncated.slice(0, lastSentence + 1).trim();
 };
 
-const generateObjectiveDraft = async (config: LLMConfig, state: GameState): Promise<DraftTurnResult> => {
+const generateObjectiveDraft = async (client: ChatClient, state: GameState): Promise<DraftTurnResult> => {
   const checkpointList = state.playerCheckpoints
     .filter((c) => !c.fulfilled)
     .map((c) => `- ${c.description}`)
@@ -50,12 +49,12 @@ Output ONLY the paragraph text, nothing else.${localeInstruction(state.locale)}$
     },
   ];
 
-  const { content, cost } = await chatCompletion(config, { messages, json: false, temperature: 0.85, maxTokens: 400 });
+  const { content, cost } = await client.complete({ messages, json: false, temperature: 0.85, maxTokens: 400 });
   const text = truncateAtSentence(content.trim(), state.config.charLimit);
   return { text, cost };
 };
 
-const generateSurvivalDraft = async (config: LLMConfig, state: GameState): Promise<DraftTurnResult> => {
+const generateSurvivalDraft = async (client: ChatClient, state: GameState): Promise<DraftTurnResult> => {
   const messages: ChatMessage[] = [
     {
       role: "system",
@@ -78,16 +77,16 @@ Output ONLY the paragraph text, nothing else.${localeInstruction(state.locale)}$
     },
   ];
 
-  const { content, cost } = await chatCompletion(config, { messages, json: false, temperature: 0.85, maxTokens: 400 });
+  const { content, cost } = await client.complete({ messages, json: false, temperature: 0.85, maxTokens: 400 });
   const text = truncateAtSentence(content.trim(), state.config.charLimit);
   return { text, cost };
 };
 
-const generateDraftTurn = async (config: LLMConfig, state: GameState): Promise<DraftTurnResult> => {
+const generateDraftTurn = async (client: ChatClient, state: GameState): Promise<DraftTurnResult> => {
   if (state.mode === "survival") {
-    return generateSurvivalDraft(config, state);
+    return generateSurvivalDraft(client, state);
   }
-  return generateObjectiveDraft(config, state);
+  return generateObjectiveDraft(client, state);
 };
 
 export type { DraftTurnResult };

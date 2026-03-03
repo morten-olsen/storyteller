@@ -1,4 +1,4 @@
-import type { StorageAdapter, SavedGame, GameSummary, LLMConfig, Locale } from "@storyteller/core";
+import type { StorageAdapter, SavedGame, GameSummary, LLMSettings, Locale } from "@storyteller/core";
 
 const DB_NAME = "storyteller";
 const DB_VERSION = 1;
@@ -59,6 +59,63 @@ const migrateGame = (game: SavedGame): SavedGame => {
   return game;
 };
 
+// Migrate old settings formats to new multi-provider LLMSettings
+const migrateSettings = (raw: unknown): LLMSettings | null => {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+  const obj = raw as Record<string, unknown>;
+
+  // New format — has remoteProviders array
+  if ("remoteProviders" in obj) {
+    return raw as LLMSettings;
+  }
+
+  // Old RemoteLLMSettings: { provider: "remote", apiKey, baseUrl, model }
+  if (obj.provider === "remote" && "apiKey" in obj && "baseUrl" in obj && "model" in obj) {
+    const providerId = crypto.randomUUID();
+    return {
+      remoteProviders: [
+        {
+          id: providerId,
+          name: "Remote API",
+          baseUrl: obj.baseUrl as string,
+          apiKey: obj.apiKey as string,
+          models: [obj.model as string],
+        },
+      ],
+      activeModel: { kind: "remote", providerId, model: obj.model as string },
+    };
+  }
+
+  // Old LocalLLMSettings: { provider: "local", modelId }
+  if (obj.provider === "local" && "modelId" in obj) {
+    return {
+      remoteProviders: [],
+      activeModel: { kind: "local", modelId: obj.modelId as string },
+    };
+  }
+
+  // Ancient format: { apiKey, baseUrl, model } (no provider field)
+  if ("apiKey" in obj && "baseUrl" in obj && "model" in obj) {
+    const providerId = crypto.randomUUID();
+    return {
+      remoteProviders: [
+        {
+          id: providerId,
+          name: "Remote API",
+          baseUrl: obj.baseUrl as string,
+          apiKey: obj.apiKey as string,
+          models: [obj.model as string],
+        },
+      ],
+      activeModel: { kind: "remote", providerId, model: obj.model as string },
+    };
+  }
+
+  return null;
+};
+
 const idbStorage: StorageAdapter = {
   async saveGame(game: SavedGame): Promise<void> {
     const db = await openDB();
@@ -82,15 +139,15 @@ const idbStorage: StorageAdapter = {
     await req(tx(db, "games", "readwrite").delete(id));
   },
 
-  async saveSettings(settings: LLMConfig): Promise<void> {
+  async saveSettings(settings: LLMSettings): Promise<void> {
     const db = await openDB();
     await req(tx(db, "settings", "readwrite").put(settings, "llm"));
   },
 
-  async loadSettings(): Promise<LLMConfig | null> {
+  async loadSettings(): Promise<LLMSettings | null> {
     const db = await openDB();
     const result = await req(tx(db, "settings", "readonly").get("llm"));
-    return (result as LLMConfig) ?? null;
+    return result ? migrateSettings(result) : null;
   },
 };
 

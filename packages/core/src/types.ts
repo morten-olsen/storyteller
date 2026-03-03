@@ -124,6 +124,23 @@ export type LLMConfig = {
   model: string;
 };
 
+// --- LLM Settings ---
+
+export type RemoteProvider = {
+  id: string;
+  name: string;
+  baseUrl: string;
+  apiKey: string;
+  models: string[];
+};
+
+export type ModelSelection = { kind: "remote"; providerId: string; model: string } | { kind: "local"; modelId: string };
+
+export type LLMSettings = {
+  remoteProviders: RemoteProvider[];
+  activeModel: ModelSelection | null;
+};
+
 // --- Storage Adapter ---
 
 export type StorageAdapter = {
@@ -131,6 +148,6 @@ export type StorageAdapter = {
   loadGame(id: string): Promise<SavedGame | null>;
   listGames(): Promise<GameSummary[]>;
   deleteGame(id: string): Promise<void>;
-  saveSettings(settings: LLMConfig): Promise<void>;
-  loadSettings(): Promise<LLMConfig | null>;
+  saveSettings(settings: LLMSettings): Promise<void>;
+  loadSettings(): Promise<LLMSettings | null>;
 };

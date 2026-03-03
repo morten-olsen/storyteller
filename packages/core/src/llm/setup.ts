@@ -1,8 +1,8 @@
-import type { LLMConfig, DifficultyConfig, GameMode, Locale, NarrationStyle, Checkpoint } from "../types.js";
+import type { DifficultyConfig, GameMode, Locale, NarrationStyle, Checkpoint } from "../types.js";
 
-import { chatCompletion } from "./client.js";
-import type { ChatMessage } from "./client.js";
+import type { ChatMessage, ChatClient } from "./client.js";
 import { localeInstruction } from "./locale-instruction.js";
+import { parseJSON } from "./parse-json.js";
 import { styleInstruction } from "./style-instruction.js";
 
 type SetupResult = {
@@ -14,7 +14,7 @@ type SetupResult = {
 };
 
 const generateObjectiveSetup = async (
-  config: LLMConfig,
+  client: ChatClient,
   difficultyConfig: DifficultyConfig,
   worldPrompt: string,
   locale: Locale = "en",
@@ -53,18 +53,18 @@ Respond with ONLY valid JSON in this exact format:
     },
   ];
 
-  const { content, cost } = await chatCompletion(config, { messages, json: true, temperature: 0.9 });
-  const parsed = JSON.parse(content);
+  const { content, cost } = await client.complete({ messages, json: true, temperature: 0.9 });
+  const parsed = parseJSON(content);
 
   return {
-    title: parsed.title ?? "Untitled Story",
-    worldDescription: parsed.worldDescription,
-    playerCheckpoints: parsed.playerCheckpoints.map((desc: string, i: number) => ({
+    title: (parsed.title as string) ?? "Untitled Story",
+    worldDescription: parsed.worldDescription as string,
+    playerCheckpoints: (parsed.playerCheckpoints as string[]).map((desc, i) => ({
       id: `player-${i}`,
       description: desc,
       fulfilled: false,
     })),
-    aiCheckpoints: parsed.aiCheckpoints.map((desc: string, i: number) => ({
+    aiCheckpoints: (parsed.aiCheckpoints as string[]).map((desc, i) => ({
       id: `ai-${i}`,
       description: desc,
       fulfilled: false,
@@ -74,7 +74,7 @@ Respond with ONLY valid JSON in this exact format:
 };
 
 const generateSurvivalSetup = async (
-  config: LLMConfig,
+  client: ChatClient,
   worldPrompt: string,
   locale: Locale = "en",
   narrationStyle: NarrationStyle = "casual",
@@ -104,12 +104,12 @@ Respond with ONLY valid JSON in this exact format:
     },
   ];
 
-  const { content, cost } = await chatCompletion(config, { messages, json: true, temperature: 0.9 });
-  const parsed = JSON.parse(content);
+  const { content, cost } = await client.complete({ messages, json: true, temperature: 0.9 });
+  const parsed = parseJSON(content);
 
   return {
-    title: parsed.title ?? "Untitled Story",
-    worldDescription: parsed.worldDescription,
+    title: (parsed.title as string) ?? "Untitled Story",
+    worldDescription: parsed.worldDescription as string,
     playerCheckpoints: [],
     aiCheckpoints: [],
     cost,
@@ -117,7 +117,7 @@ Respond with ONLY valid JSON in this exact format:
 };
 
 const generateSetup = async (
-  config: LLMConfig,
+  client: ChatClient,
   mode: GameMode,
   difficultyConfig: DifficultyConfig,
   worldPrompt: string,
@@ -125,9 +125,9 @@ const generateSetup = async (
   narrationStyle: NarrationStyle = "casual",
 ): Promise<SetupResult> => {
   if (mode === "survival") {
-    return generateSurvivalSetup(config, worldPrompt, locale, narrationStyle);
+    return generateSurvivalSetup(client, worldPrompt, locale, narrationStyle);
   }
-  return generateObjectiveSetup(config, difficultyConfig, worldPrompt, locale, narrationStyle);
+  return generateObjectiveSetup(client, difficultyConfig, worldPrompt, locale, narrationStyle);
 };
 
 export type { SetupResult };

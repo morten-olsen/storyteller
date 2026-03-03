@@ -7,7 +7,7 @@ import type {
   Difficulty,
   AiPersona,
   NarrationStyle,
-  LLMConfig,
+  ChatClient,
   Locale,
   StreamCompletionResult,
 } from "@storyteller/core";
@@ -29,7 +29,7 @@ import { idbStorage } from "../storage.ts";
 
 const SAVEABLE_PHASES = new Set(["player_turn", "ai_turn", "scoring", "closing", "game_over"]);
 
-const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
+const useGame = (getClient: () => ChatClient, navigate: NavigateFunction) => {
   const [game, setGame] = useState<GameState | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +91,7 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
       setLoading(true);
 
       try {
-        const result = await generateSetup(llmConfig, mode, config, worldPrompt, locale, narrationStyle);
+        const result = await generateSetup(getClient(), mode, config, worldPrompt, locale, narrationStyle);
         setGame((prev) =>
           prev
             ? applySetupResult(
@@ -110,7 +110,7 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
         setLoading(false);
       }
     },
-    [llmConfig, navigate],
+    [getClient, navigate],
   );
 
   const submitTurn = useCallback(
@@ -125,7 +125,7 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
       setLoading(true);
 
       try {
-        const judgeResult = await judgePlayerTurn(llmConfig, state);
+        const judgeResult = await judgePlayerTurn(getClient(), state);
 
         // For survival mode death: use deathReason from judge as the score reason
         const scoreReason =
@@ -152,7 +152,7 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
 
         let capturedText = "";
         const streamResult = await new Promise<StreamCompletionResult>((resolve, reject) => {
-          streamAiTurn(llmConfig, state, {
+          streamAiTurn(getClient(), state, {
             onToken(token: string) {
               if (abortRef.current) {
                 return;
@@ -177,7 +177,7 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
         setLoading(false);
       }
     },
-    [game, llmConfig, navigate],
+    [game, getClient, navigate],
   );
 
   const endGame = useCallback(() => {
@@ -193,7 +193,7 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
     }
     setDraftLoading(true);
     try {
-      const result = await generateDraftTurn(llmConfig, game);
+      const result = await generateDraftTurn(getClient(), game);
       setDraftText(result.text);
       setGame((prev) => (prev ? { ...prev, totalCost: prev.totalCost + result.cost } : prev));
     } catch {
@@ -201,7 +201,7 @@ const useGame = (llmConfig: LLMConfig, navigate: NavigateFunction) => {
     } finally {
       setDraftLoading(false);
     }
-  }, [game, draftLoading, llmConfig]);
+  }, [game, draftLoading, getClient]);
 
   const resumeGame = useCallback(
     async (id: string) => {

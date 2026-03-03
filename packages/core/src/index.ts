@@ -16,6 +16,9 @@ export type {
   GameSummary,
   SavedGame,
   LLMConfig,
+  RemoteProvider,
+  ModelSelection,
+  LLMSettings,
   StorageAdapter,
 } from "./types.js";
 
@@ -44,13 +47,14 @@ export {
 } from "./game.js";
 
 // LLM
-export { chatCompletion, chatCompletionStream } from "./llm/client.js";
+export { chatCompletion, chatCompletionStream, createFetchClient } from "./llm/client.js";
 export type {
   ChatMessage,
   ChatCompletionOptions,
   StreamCallbacks,
   ChatCompletionResult,
   StreamCompletionResult,
+  ChatClient,
 } from "./llm/client.js";
 export { generateSetup } from "./llm/setup.js";
 export type { SetupResult } from "./llm/setup.js";

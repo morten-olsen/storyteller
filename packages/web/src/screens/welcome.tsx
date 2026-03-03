@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Locale } from "@storyteller/core";
 
@@ -21,6 +21,10 @@ const Welcome = ({ isConfigured, activeGameId, activeGameTitle, onResume }: Prop
     await saveLocale(next);
   };
 
+  if (!isConfigured) {
+    return <Navigate to='/onboarding' replace />;
+  }
+
   return (
     <div className='screen welcome'>
       <div className='welcome-lang'>
@@ -42,18 +46,9 @@ const Welcome = ({ isConfigured, activeGameId, activeGameTitle, onResume }: Prop
             {activeGameTitle ? t("welcome.continueGame", { title: activeGameTitle }) : t("welcome.continueDefault")}
           </button>
         )}
-        {isConfigured ? (
-          <button
-            className={`btn ${activeGameId ? "btn-secondary" : "btn-primary"}`}
-            onClick={() => navigate("/setup")}
-          >
-            {t("welcome.newGame")}
-          </button>
-        ) : (
-          <button className='btn btn-primary' onClick={() => navigate("/settings")}>
-            {t("welcome.configureApi")}
-          </button>
-        )}
+        <button className={`btn ${activeGameId ? "btn-secondary" : "btn-primary"}`} onClick={() => navigate("/setup")}>
+          {t("welcome.newGame")}
+        </button>
         <button className='btn btn-secondary' onClick={() => navigate("/history")}>
           {t("welcome.pastGames")}
         </button>

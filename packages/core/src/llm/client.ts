@@ -143,5 +143,22 @@ const chatCompletionStream = async (
   return { cost: lastCost };
 };
 
-export type { ChatMessage, ChatCompletionOptions, StreamCallbacks, ChatCompletionResult, StreamCompletionResult };
-export { chatCompletion, chatCompletionStream };
+type ChatClient = {
+  complete: (options: ChatCompletionOptions) => Promise<ChatCompletionResult>;
+  stream: (options: ChatCompletionOptions, callbacks: StreamCallbacks) => Promise<StreamCompletionResult>;
+};
+
+const createFetchClient = (config: LLMConfig): ChatClient => ({
+  complete: (options) => chatCompletion(config, options),
+  stream: (options, callbacks) => chatCompletionStream(config, options, callbacks),
+});
+
+export type {
+  ChatMessage,
+  ChatCompletionOptions,
+  StreamCallbacks,
+  ChatCompletionResult,
+  StreamCompletionResult,
+  ChatClient,
+};
+export { chatCompletion, chatCompletionStream, createFetchClient };

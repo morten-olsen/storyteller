@@ -1,9 +1,9 @@
-import type { LLMConfig, GameState, TurnScore, Checkpoint, Difficulty } from "../types.js";
+import type { GameState, TurnScore, Checkpoint, Difficulty } from "../types.js";
 import { computeObjectiveScore, computeSurvivalScore } from "../scoring.js";
 
-import { chatCompletion } from "./client.js";
-import type { ChatMessage } from "./client.js";
+import type { ChatMessage, ChatClient } from "./client.js";
 import { localeInstruction } from "./locale-instruction.js";
+import { parseJSON } from "./parse-json.js";
 
 type JudgeResult = {
   score: TurnScore;
@@ -34,7 +34,7 @@ const strictnessInstruction = (difficulty: Difficulty): string => {
   }
 };
 
-const judgeObjectiveTurn = async (config: LLMConfig, state: GameState): Promise<JudgeResult> => {
+const judgeObjectiveTurn = async (client: ChatClient, state: GameState): Promise<JudgeResult> => {
   const latestTurn = state.turns[state.turns.length - 1];
   const previousTurns = state.turns.slice(0, -1);
   const storyContext = previousTurns.map((t) => t.text).join("\n\n");
@@ -51,10 +51,19 @@ const judgeObjectiveTurn = async (config: LLMConfig, state: GameState): Promise<
       role: "system",
       content: `You are an objective literary critic judging a collaborative storytelling game. You evaluate the latest paragraph written by the player.
 
-Score each dimension from -1.0 to +1.0 (use one decimal place):
-- coherence: Does this follow logically from the story so far?
-- proseQuality: Is the writing compelling, vivid, and well-crafted?
-- adaptation: How gracefully does it respond to or redirect the story's direction?
+Score EACH dimension independently from -1.0 to +1.0 (one decimal place). Use this rubric:
+  -1.0 = terrible, completely fails
+  -0.5 = poor, major problems
+   0.0 = mediocre, neither good nor bad
+  +0.5 = good, solid quality
+  +1.0 = exceptional, outstanding
+
+Dimensions:
+- coherence: Does this follow logically from the story so far? Lazy, nonsensical, or off-topic input = negative.
+- proseQuality: Is the writing compelling, vivid, and well-crafted? Minimal-effort or sloppy writing = negative.
+- adaptation: How gracefully does it respond to or redirect the story's direction? Ignoring the narrative = negative.
+
+A short, low-effort response (e.g. just a few words) MUST score negative on ALL dimensions.
 
 Also evaluate whether any checkpoints (player OR AI) have been newly fulfilled by the events in the complete story so far.
 
@@ -64,12 +73,12 @@ ${playerCheckpointList}
 AI CHECKPOINTS:
 ${aiCheckpointList}
 
-Respond with ONLY valid JSON:
+Respond with ONLY valid JSON matching this schema (replace NUMBER with your computed score):
 {
-  "coherence": 0.0,
-  "proseQuality": 0.0,
-  "adaptation": 0.0,
-  "reason": "1-2 sentence explanation of why you scored this way and what the writer could improve",
+  "coherence": NUMBER,
+  "proseQuality": NUMBER,
+  "adaptation": NUMBER,
+  "reason": "your explanation here",
   "newlyFulfilledPlayer": [],
   "newlyFulfilledAi": []
 }
@@ -82,8 +91,8 @@ Where newlyFulfilledPlayer and newlyFulfilledAi are arrays of checkpoint numbers
     },
   ];
 
-  const { content, cost } = await chatCompletion(config, { messages, json: true, temperature: 0.3 });
-  const parsed = JSON.parse(content);
+  const { content, cost } = await client.complete({ messages, json: true, temperature: 0.3 });
+  const parsed = parseJSON(content);
 
   const score = computeObjectiveScore({
     coherence: clamp(parsed.coherence),
@@ -91,20 +100,23 @@ Where newlyFulfilledPlayer and newlyFulfilledAi are arrays of checkpoint numbers
     adaptation: clamp(parsed.adaptation),
   });
 
+  const fulfilledPlayer = (parsed.newlyFulfilledPlayer ?? []) as number[];
+  const fulfilledAi = (parsed.newlyFulfilledAi ?? []) as number[];
+
   const playerCheckpoints = state.playerCheckpoints.map((c, i) => ({
     ...c,
-    fulfilled: c.fulfilled || (parsed.newlyFulfilledPlayer ?? []).includes(i + 1),
+    fulfilled: c.fulfilled || fulfilledPlayer.includes(i + 1),
   }));
 
   const aiCheckpoints = state.aiCheckpoints.map((c, i) => ({
     ...c,
-    fulfilled: c.fulfilled || (parsed.newlyFulfilledAi ?? []).includes(i + 1),
+    fulfilled: c.fulfilled || fulfilledAi.includes(i + 1),
   }));
 
-  return { score, reason: parsed.reason ?? "", playerCheckpoints, aiCheckpoints, cost };
+  return { score, reason: (parsed.reason as string) ?? "", playerCheckpoints, aiCheckpoints, cost };
 };
 
-const judgeSurvivalTurn = async (config: LLMConfig, state: GameState): Promise<JudgeResult> => {
+const judgeSurvivalTurn = async (client: ChatClient, state: GameState): Promise<JudgeResult> => {
   const latestTurn = state.turns[state.turns.length - 1];
   const previousTurns = state.turns.slice(0, -1);
   const storyContext = previousTurns.map((t) => t.text).join("\n\n");
@@ -119,21 +131,30 @@ ROUND: ${roundNumber + 1}
 DIFFICULTY: ${state.difficulty}
 ${strictnessInstruction(state.difficulty)}
 
-Score each dimension from -1.0 to +1.0 (use one decimal place):
-- creativity: How original and inventive is the solution?
-- writingQuality: Is the prose compelling, vivid, and well-crafted?
-- effectiveness: Does the described action plausibly resolve the danger?
+Score EACH dimension independently from -1.0 to +1.0 (one decimal place). Use this rubric:
+  -1.0 = terrible, completely fails
+  -0.5 = poor, major problems
+   0.0 = mediocre, neither good nor bad
+  +0.5 = good, solid quality
+  +1.0 = exceptional, outstanding
+
+Dimensions:
+- creativity: How original and inventive is the solution? Generic or lazy attempts = negative.
+- writingQuality: Is the prose compelling, vivid, and well-crafted? Minimal-effort writing = negative.
+- effectiveness: Does the described action plausibly resolve the danger? Giving up or ignoring the danger = negative.
+
+A short, low-effort response (e.g. just a few words) MUST score negative on ALL dimensions.
 
 Then determine: does the player SURVIVE this round?
 
-Respond with ONLY valid JSON:
+Respond with ONLY valid JSON matching this schema (replace NUMBER with your computed score):
 {
-  "creativity": 0.0,
-  "writingQuality": 0.0,
-  "effectiveness": 0.0,
+  "creativity": NUMBER,
+  "writingQuality": NUMBER,
+  "effectiveness": NUMBER,
   "survived": true,
-  "reason": "1-2 sentence explanation",
-  "deathReason": "only if survived is false — a dramatic description of how they died"
+  "reason": "your explanation here",
+  "deathReason": "only if survived is false"
 }${localeInstruction(state.locale)}`,
     },
     {
@@ -142,8 +163,8 @@ Respond with ONLY valid JSON:
     },
   ];
 
-  const { content, cost } = await chatCompletion(config, { messages, json: true, temperature: 0.3 });
-  const parsed = JSON.parse(content);
+  const { content, cost } = await client.complete({ messages, json: true, temperature: 0.3 });
+  const parsed = parseJSON(content);
 
   const survived = parsed.survived !== false;
   const score = computeSurvivalScore({
@@ -155,20 +176,20 @@ Respond with ONLY valid JSON:
 
   return {
     score,
-    reason: parsed.reason ?? "",
+    reason: (parsed.reason as string) ?? "",
     playerCheckpoints: state.playerCheckpoints,
     aiCheckpoints: state.aiCheckpoints,
     survived,
-    deathReason: survived ? undefined : (parsed.deathReason ?? parsed.reason ?? ""),
+    deathReason: survived ? undefined : ((parsed.deathReason ?? parsed.reason ?? "") as string),
     cost,
   };
 };
 
-const judgePlayerTurn = async (config: LLMConfig, state: GameState): Promise<JudgeResult> => {
+const judgePlayerTurn = async (client: ChatClient, state: GameState): Promise<JudgeResult> => {
   if (state.mode === "survival") {
-    return judgeSurvivalTurn(config, state);
+    return judgeSurvivalTurn(client, state);
   }
-  return judgeObjectiveTurn(config, state);
+  return judgeObjectiveTurn(client, state);
 };
 
 export type { JudgeResult };
